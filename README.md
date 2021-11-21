@@ -1,6 +1,6 @@
 # GitHub Language Extension
 
-GitHub Language Extension(Chrome Extension)
+GitHub Language Stats Extension(Chrome Extension)
 
 ## Prerequisites
 
@@ -10,28 +10,11 @@ GitHub Language Extension(Chrome Extension)
 
 * [Visual Studio Code](https://code.visualstudio.com/)
 
-## Includes the following
-
-* TypeScript
-* Webpack
-* React
-* Jest
-* Example Code
-    * Chrome Storage
-    * Options Version 2
-    * content script
-    * count up badge number
-    * background
-
 ## Setup
 
 ```
 npm install
 ```
-
-## Import as Visual Studio Code project
-
-...
 
 ## Build
 

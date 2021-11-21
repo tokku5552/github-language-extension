@@ -8,8 +8,7 @@ type FormData = {
 };
 
 const Popup = () => {
-  const [currentURL, setCurrentURL] = useState<string>();
-  const [username, setUsername] = useState<string>("tokku5552");
+  const [username, setUsername] = useState<string>("");
   const [currentStats, setCurrentStats] = useState<AxiosResponse>();
   const [currentTopLanguage, setCurrentTopLanguage] = useState<AxiosResponse>();
   const {
@@ -26,15 +25,25 @@ const Popup = () => {
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      setCurrentURL(tabs[0].url);
+      const currentURL = tabs[0].url as string;
+      const name = getGitHubUsername(currentURL) as string;
+      setUsername(name);
+      setValue("username", name);
     });
-    const getData = async (username: string) => {
+  }, []);
+
+  useEffect(() => {
+    const fetch = async (username: string) => {
       const stats = await getGitHubStats(username);
       const lang = await getGitHubTopLanguage(username);
       setCurrentTopLanguage(lang);
       setCurrentStats(stats);
     };
-    getData(username);
+    console.log(username);
+    if (username !== "" && username !== undefined) {
+      console.log(username);
+      fetch(username);
+    }
   }, [username]);
 
   const getGitHubStats = async (username: string) => {
@@ -51,11 +60,17 @@ const Popup = () => {
     return response;
   };
 
+  const getGitHubUsername = (url: string) => {
+    const urlObj = new URL(url);
+    console.log(urlObj.hostname);
+    if (urlObj.hostname === "github.com") {
+      return urlObj.pathname.split("/")[1];
+    }
+  };
+
   return (
     <>
-      <ul style={{ minWidth: "700px" }}>
-        <li>Current URL: {currentURL}</li>
-      </ul>
+      <h1>GitHub Language Stats Extension</h1>
       <div dangerouslySetInnerHTML={{ __html: currentStats?.data }} />
       <div dangerouslySetInnerHTML={{ __html: currentTopLanguage?.data }} />
       <form onSubmit={onSubmit}>
