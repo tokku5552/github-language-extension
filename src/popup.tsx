@@ -13,7 +13,6 @@ const Popup = () => {
     const getData = async () => {
       const res = await getGitHubStats();
       console.log(res.data);
-      // const resp = res.data;
       setCurrentStats(res);
     };
     getData();
@@ -39,6 +38,13 @@ const Popup = () => {
   const getGitHubStats = async () => {
     const response = await axios.get(
       "https://github-readme-stats.vercel.app/api?username=anuraghazra"
+    );
+    return response;
+  };
+
+  const getGitHubTopLanguage = async () => {
+    const response = await axios.get(
+      "https://github-readme-stats.vercel.app/api/top-langs/?username=anuraghazra"
     );
     return response;
   };
