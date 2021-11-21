@@ -22,7 +22,7 @@ const Popup = () => {
 
   const getGitHubStats = async () => {
     const response = await axios.get(
-      "https://github-readme-stats.vercel.app/api?username=anuraghazra"
+      "https://github-readme-stats.vercel.app/api?username=anuraghazra&count_private=true&show_icons=true"
     );
     return response;
   };
