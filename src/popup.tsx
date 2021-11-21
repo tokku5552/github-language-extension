@@ -14,29 +14,11 @@ const Popup = () => {
     const getData = async () => {
       const stats = await getGitHubStats();
       const lang = await getGitHubTopLanguage();
-      console.log(stats.data);
       setCurrentTopLanguage(lang);
       setCurrentStats(stats);
     };
     getData();
   }, []);
-
-  const changeBackground = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tab = tabs[0];
-      if (tab.id) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          {
-            color: "#555505",
-          },
-          (msg) => {
-            console.log("result message:", msg);
-          }
-        );
-      }
-    });
-  };
 
   const getGitHubStats = async () => {
     const response = await axios.get(
@@ -60,7 +42,7 @@ const Popup = () => {
       </ul>
       <div dangerouslySetInnerHTML={{ __html: currentStats?.data }} />
       <div dangerouslySetInnerHTML={{ __html: currentTopLanguage?.data }} />
-      <button onClick={changeBackground}>change background</button>
+      {/* <button onClick={changeBackground}>change background</button> */}
     </>
   );
 };
