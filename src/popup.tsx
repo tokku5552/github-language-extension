@@ -8,7 +8,6 @@ type FormData = {
 };
 
 const Popup = () => {
-  const [currentURL, setCurrentURL] = useState<string>();
   const [username, setUsername] = useState<string>("");
   const [currentStats, setCurrentStats] = useState<AxiosResponse>();
   const [currentTopLanguage, setCurrentTopLanguage] = useState<AxiosResponse>();
@@ -26,9 +25,8 @@ const Popup = () => {
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const current = tabs[0].url as string;
-      setCurrentURL(tabs[0].url);
-      const name = getGitHubUsername(current) as string;
+      const currentURL = tabs[0].url as string;
+      const name = getGitHubUsername(currentURL) as string;
       setUsername(name);
       setValue("username", name);
     });
@@ -41,7 +39,9 @@ const Popup = () => {
       setCurrentTopLanguage(lang);
       setCurrentStats(stats);
     };
-    if (username !== "") {
+    console.log(username);
+    if (username !== "" && username !== undefined) {
+      console.log(username);
       fetch(username);
     }
   }, [username]);
@@ -50,7 +50,6 @@ const Popup = () => {
     const response = await axios.get(
       `https://github-readme-stats.vercel.app/api?username=${username}&count_private=true&show_icons=true`
     );
-    console.log(response.status);
     return response;
   };
 
@@ -58,7 +57,6 @@ const Popup = () => {
     const response = await axios.get(
       `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact`
     );
-    console.log(response.status);
     return response;
   };
 
@@ -72,10 +70,7 @@ const Popup = () => {
 
   return (
     <>
-      <ul style={{ minWidth: "700px" }}>
-        <li>Current URL: {currentURL}</li>
-      </ul>
-
+      <h1>GitHub Language Stats Extension</h1>
       <div dangerouslySetInnerHTML={{ __html: currentStats?.data }} />
       <div dangerouslySetInnerHTML={{ __html: currentTopLanguage?.data }} />
       <form onSubmit={onSubmit}>
