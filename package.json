@@ -19,7 +19,8 @@
   "dependencies": {
     "axios": "^0.24.0",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-hook-form": "^7.20.2"
   },
   "devDependencies": {
     "@types/chrome": "0.0.158",
