@@ -12,24 +12,24 @@ const Popup = () => {
       setCurrentURL(tabs[0].url);
     });
     const getData = async () => {
-      const stats = await getGitHubStats();
-      const lang = await getGitHubTopLanguage();
+      const stats = await getGitHubStats("tokku5552");
+      const lang = await getGitHubTopLanguage("tokku5552");
       setCurrentTopLanguage(lang);
       setCurrentStats(stats);
     };
     getData();
   }, []);
 
-  const getGitHubStats = async () => {
+  const getGitHubStats = async (username: string) => {
     const response = await axios.get(
-      "https://github-readme-stats.vercel.app/api?username=anuraghazra&count_private=true&show_icons=true"
+      `https://github-readme-stats.vercel.app/api?username=${username}&count_private=true&show_icons=true`
     );
     return response;
   };
 
-  const getGitHubTopLanguage = async () => {
+  const getGitHubTopLanguage = async (username: string) => {
     const response = await axios.get(
-      "https://github-readme-stats.vercel.app/api/top-langs/?username=anuraghazra&layout=compact"
+      `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact`
     );
     return response;
   };
