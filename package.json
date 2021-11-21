@@ -17,6 +17,7 @@
     "url": "https://github.com/tokku5552/github-language-extension.git"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },

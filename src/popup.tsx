@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import axios, { AxiosResponse } from "axios";
 
 const Popup = () => {
-  const [count, setCount] = useState(0);
   const [currentURL, setCurrentURL] = useState<string>();
-
-  useEffect(() => {
-    chrome.action.setBadgeText({ text: count.toString() });
-  }, [count]);
+  const [currentStats, setCurrentStats] = useState<AxiosResponse>();
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       setCurrentURL(tabs[0].url);
     });
+    const getData = async () => {
+      const res = await getGitHubStats();
+      console.log(res.data);
+      // const resp = res.data;
+      setCurrentStats(res);
+    };
+    getData();
   }, []);
 
   const changeBackground = () => {
@@ -22,7 +26,7 @@ const Popup = () => {
         chrome.tabs.sendMessage(
           tab.id,
           {
-            color: "#555555",
+            color: "#555505",
           },
           (msg) => {
             console.log("result message:", msg);
@@ -32,19 +36,20 @@ const Popup = () => {
     });
   };
 
+  const getGitHubStats = async () => {
+    const response = await axios.get(
+      "https://github-readme-stats.vercel.app/api?username=anuraghazra"
+    );
+    return response;
+  };
+
   return (
     <>
-      <title>a</title>
       <ul style={{ minWidth: "700px" }}>
         <li>Current URL: {currentURL}</li>
         <li>Current Time: {new Date().toLocaleTimeString()}</li>
       </ul>
-      <button
-        onClick={() => setCount(count + 1)}
-        style={{ marginRight: "5px" }}
-      >
-        count up
-      </button>
+      <div dangerouslySetInnerHTML={{ __html: currentStats?.data }} />
       <button onClick={changeBackground}>change background</button>
     </>
   );
