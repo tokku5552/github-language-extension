@@ -38,7 +38,6 @@ const Popup = () => {
     <>
       <ul style={{ minWidth: "700px" }}>
         <li>Current URL: {currentURL}</li>
-        <li>Current Time: {new Date().toLocaleTimeString()}</li>
       </ul>
       <div dangerouslySetInnerHTML={{ __html: currentStats?.data }} />
       <div dangerouslySetInnerHTML={{ __html: currentTopLanguage?.data }} />
