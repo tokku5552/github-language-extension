@@ -19,12 +19,16 @@ const getGitHubTopLanguage = (username: string) => {
   );
 };
 
-const getGitHubUsername = (url: string) => {
-  const urlObj = new URL(url);
-  console.log(urlObj.hostname);
-  if (urlObj.hostname === "github.com") {
-    return urlObj.pathname.split("/")[1];
-  }
+const getGitHubUsername = (url: string): string => {
+  try {
+    const urlObj = new URL(url);
+    console.log(urlObj.hostname);
+    if (urlObj.hostname === "github.com") {
+      return urlObj.pathname.split("/")[1];
+    }
+  } catch {}
+
+  return "";
 };
 
 const Popup = () => {
@@ -45,8 +49,8 @@ const Popup = () => {
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const currentURL = tabs[0].url as string;
-      const name = getGitHubUsername(currentURL) as string;
+      const currentURL = tabs[0].url || "";
+      const name = getGitHubUsername(currentURL);
       setUsername(name);
       setValue("username", name);
     });
@@ -60,7 +64,7 @@ const Popup = () => {
       setCurrentStats(stats.data);
     };
     console.log(username);
-    if (username !== "" && username !== undefined) {
+    if (username !== "") {
       console.log(username);
       fetch(username);
     }
