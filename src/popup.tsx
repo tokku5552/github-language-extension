@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { Button, Input } from "@chakra-ui/react"
+import { ChakraProvider } from "@chakra-ui/react"
+import { FormErrorMessage, FormLabel, FormControl } from '@chakra-ui/react'
 
 type FormData = {
   username: string;
@@ -26,7 +29,7 @@ const getGitHubUsername = (url: string): string => {
     if (urlObj.hostname === "github.com") {
       return urlObj.pathname.split("/")[1];
     }
-  } catch {}
+  } catch { }
 
   return "";
 };
@@ -39,6 +42,7 @@ const Popup = () => {
     register,
     setValue,
     handleSubmit,
+    formState,
     formState: { errors },
   } = useForm<FormData>();
 
@@ -72,14 +76,19 @@ const Popup = () => {
 
   return (
     <>
-      <h1>GitHub Language Stats Extension</h1>
-      <div dangerouslySetInnerHTML={{ __html: currentStats }} />
-      <div dangerouslySetInnerHTML={{ __html: currentTopLanguage }} />
-      <form onSubmit={onSubmit}>
-        <label>GitHub username </label>
-        <input {...register("username")} placeholder="GitHub username" />
-        <input type="submit" />
-      </form>
+      <ChakraProvider>
+        <h1>GitHub Language Stats Extension</h1>
+        <div dangerouslySetInnerHTML={{ __html: currentStats }} />
+        <div dangerouslySetInnerHTML={{ __html: currentTopLanguage }} />
+        <form onSubmit={onSubmit}>
+          <FormControl id="username" isInvalid={!!errors.username} isRequired>
+            <FormLabel>GitHub username</FormLabel>
+            <Input placeholder="GitHub username" {...register('username', { required: true })} />
+            <FormErrorMessage>{errors.username && 'GitHub username is required'}</FormErrorMessage>
+          </FormControl>
+          <Button mt={4} colorScheme="teal" disabled={!formState.isValid} isLoading={formState.isSubmitting} type="submit">Submit</Button>
+        </form>
+      </ChakraProvider>
     </>
   );
 };
