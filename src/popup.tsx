@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { Button, Input, Box, Heading } from "@chakra-ui/react"
+import { ChakraProvider } from "@chakra-ui/react"
+import { FormErrorMessage, FormLabel, FormControl } from '@chakra-ui/react'
 
 type FormData = {
   username: string;
@@ -26,7 +29,7 @@ const getGitHubUsername = (url: string): string => {
     if (urlObj.hostname === "github.com") {
       return urlObj.pathname.split("/")[1];
     }
-  } catch {}
+  } catch { }
 
   return "";
 };
@@ -39,6 +42,7 @@ const Popup = () => {
     register,
     setValue,
     handleSubmit,
+    formState,
     formState: { errors },
   } = useForm<FormData>();
 
@@ -72,14 +76,30 @@ const Popup = () => {
 
   return (
     <>
-      <h1>GitHub Language Stats Extension</h1>
-      <div dangerouslySetInnerHTML={{ __html: currentStats }} />
-      <div dangerouslySetInnerHTML={{ __html: currentTopLanguage }} />
-      <form onSubmit={onSubmit}>
-        <label>GitHub username </label>
-        <input {...register("username")} placeholder="GitHub username" />
-        <input type="submit" />
-      </form>
+      <ChakraProvider>
+        <Box w="540px">
+          <Box bg="#4299E1" w="100%" p={4} color="white">
+            <Heading as="h3" size="xl" isTruncated>
+              GitHub Language Stats Extension
+            </Heading>
+          </Box>
+          <Box p={4}>
+            <div dangerouslySetInnerHTML={{ __html: currentStats }} />
+            <div dangerouslySetInnerHTML={{ __html: currentTopLanguage }} />
+          </Box>
+          <Box pb={2} pl={4} pr={4}>
+            <form onSubmit={onSubmit}>
+              <FormControl id="username" isInvalid={!!errors.username} isRequired>
+                <FormLabel>GitHub username</FormLabel>
+                <Input placeholder="GitHub username" {...register('username', { required: true })} />
+                <FormErrorMessage>{errors.username && 'GitHub username is required'}</FormErrorMessage>
+              </FormControl>
+              <Button mt={2} bg="#4299E1" color="white" isLoading={formState.isSubmitting} type="submit">Submit</Button>
+            </form>
+          </Box>
+
+        </Box>
+      </ChakraProvider>
     </>
   );
 };
