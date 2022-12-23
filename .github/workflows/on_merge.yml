@@ -1,0 +1,47 @@
+name: on_merge
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+jobs:
+  Release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: npm
+      - name: Prepare
+        run: |
+          yarn install
+          # yarn lint
+          # yarn test
+      - uses: fregante/daily-version-action@v2
+        id: daily-version
+      - name: build
+        run: npm run build
+      - name: Update manifest.json
+        run: |
+          npx dot-json@1 dist/manifest.json version ${{ steps.daily-version.outputs.version }}
+      - name: Archive
+        run: |
+          zip extension.zip ./dist/*
+      - name: Submit
+        run: |
+          npx chrome-webstore-upload-cli@2 upload --source extension.zip --auto-publish
+        env:
+          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+      - name: Create release draft
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.daily-version.outputs.version }}
+          draft: false
+          generate_release_notes: true
+          files: extension.zip
