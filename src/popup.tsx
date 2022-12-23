@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { Button, Input, Box, Heading } from "@chakra-ui/react"
-import { ChakraProvider } from "@chakra-ui/react"
-import { FormErrorMessage, FormLabel, FormControl } from '@chakra-ui/react'
+import { Button, Input, Box, Heading } from "@chakra-ui/react";
+import { ChakraProvider } from "@chakra-ui/react";
+import { FormErrorMessage, FormLabel, FormControl } from "@chakra-ui/react";
 
 type FormData = {
   username: string;
@@ -29,7 +29,7 @@ const getGitHubUsername = (url: string): string => {
     if (urlObj.hostname === "github.com") {
       return urlObj.pathname.split("/")[1];
     }
-  } catch { }
+  } catch {}
 
   return "";
 };
@@ -89,15 +89,31 @@ const Popup = () => {
           </Box>
           <Box pb={2} pl={4} pr={4}>
             <form onSubmit={onSubmit}>
-              <FormControl id="username" isInvalid={!!errors.username} isRequired>
+              <FormControl
+                id="username"
+                isInvalid={!!errors.username}
+                isRequired
+              >
                 <FormLabel>GitHub username</FormLabel>
-                <Input placeholder="GitHub username" {...register('username', { required: true })} />
-                <FormErrorMessage>{errors.username && 'GitHub username is required'}</FormErrorMessage>
+                <Input
+                  placeholder="GitHub username"
+                  {...register("username", { required: true })}
+                />
+                <FormErrorMessage>
+                  {errors.username && "GitHub username is required"}
+                </FormErrorMessage>
               </FormControl>
-              <Button mt={2} bg="#4299E1" color="white" isLoading={formState.isSubmitting} type="submit">Submit</Button>
+              <Button
+                mt={2}
+                bg="#4299E1"
+                color="white"
+                isLoading={formState.isSubmitting}
+                type="submit"
+              >
+                Submit
+              </Button>
             </form>
           </Box>
-
         </Box>
       </ChakraProvider>
     </>

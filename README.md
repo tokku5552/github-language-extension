@@ -2,9 +2,18 @@
 
 GitHub Language Stats Extension(Chrome Extension)
 
+![](docs/image.png)
+
 ## Prerequisites
 
-* [node + npm](https://nodejs.org/) (Current Version)
+- versions
+
+| runtime |version|
+|--|---|
+|node|v18.12.1|
+|npm|8.19.2|
+|yarn|1.22.19|
+
 
 ## Option
 
@@ -12,31 +21,26 @@ GitHub Language Stats Extension(Chrome Extension)
 
 ## Setup
 
-```
-npm install
+```bash:
+yarn install
 ```
 
 ## Build
 
-```
-npm run build
+```bash:
+yarn build
 ```
 
 ## Build in watch mode
 
-### terminal
 
+```bash:
+yarn watch
 ```
-npm run watch
-```
-
-### Visual Studio Code
-
-Run watch mode.
 
 ## Load extension to chrome
 
 Load `dist` directory
 
 ## Test
-`npx jest` or `npm run test`
+`npx jest` or `yarn test`
