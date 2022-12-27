@@ -27,6 +27,7 @@ jobs:
           npx dot-json@1 dist/manifest.json version ${{ steps.daily-version.outputs.version }}
       - name: Archive
         run: |
+          zip extension.zip ./dist/*
           zip extension.zip ./dist/**/*
       - name: Check Archive
         run: |
@@ -38,8 +39,3 @@ jobs:
         with:
           name: archive file
           path: extention.zip
-      - name: Upload ./dist
-        uses: actions/upload-artifact@v3
-        with:
-          name: expand zip file
-          path: ./dist
