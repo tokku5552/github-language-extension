@@ -7,10 +7,6 @@
     "default_icon": "icon.png",
     "default_popup": "popup.html"
   },
-  "permissions": [
-    "tabs"
-  ],
-  "host_permissions": [
-    "https://github-readme-stats.vercel.app/*"
-  ]
+  "permissions": ["tabs"],
+  "host_permissions": ["https://github-readme-stats.vercel.app/*"]
 }
