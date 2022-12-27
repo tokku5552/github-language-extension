@@ -29,7 +29,12 @@ jobs:
           npx dot-json@1 dist/manifest.json version ${{ steps.daily-version.outputs.version }}
       - name: Archive
         run: |
-          zip extension.zip ./dist/**/*
+          zip -r extension.zip ./dist
+      - name: Check Archive
+        run: |
+          rm -rf ./dist
+          unzip extension.zip
+          ls -lR ./dist
       - name: Submit
         run: |
           npx chrome-webstore-upload-cli@2 upload --source extension.zip --auto-publish
