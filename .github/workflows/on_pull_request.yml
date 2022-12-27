@@ -1,13 +1,11 @@
-name: on_merge
+name: on_pull_request
 on:
   pull_request:
-    types:
-      - closed
     branches:
       - main
+      - develop
 jobs:
-  Release:
-    if: github.event.pull_request.merged == true
+  Test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -35,18 +33,3 @@ jobs:
           rm -rf ./dist
           unzip extension.zip
           ls -lR ./dist
-      - name: Submit
-        run: |
-          npx chrome-webstore-upload-cli@2 upload --source extension.zip --auto-publish
-        env:
-          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
-      - name: Create release draft
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.daily-version.outputs.version }}
-          draft: false
-          generate_release_notes: true
-          files: extension.zip
