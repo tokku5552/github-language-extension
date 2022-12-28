@@ -1,5 +1,5 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import { Button, Input, Box, Heading } from "@chakra-ui/react";
+import { Box, Heading } from '@chakra-ui/react';
+import React, { ReactNode } from 'react';
 
 export default function Header({ children }: { children: ReactNode }) {
   return (

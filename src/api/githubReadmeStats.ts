@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const getGitHubStats = (username: string) => {
   return axios.get<string>(
@@ -16,10 +16,12 @@ export const getGitHubUsername = (url: string): string => {
   try {
     const urlObj = new URL(url);
     console.log(urlObj.hostname);
-    if (urlObj.hostname === "github.com") {
-      return urlObj.pathname.split("/")[1];
+    if (urlObj.hostname === 'github.com') {
+      return urlObj.pathname.split('/')[1];
     }
-  } catch {}
+  } catch {
+    //
+  }
 
-  return "";
+  return '';
 };
