@@ -16,7 +16,7 @@ jobs:
       - name: Prepare
         run: |
           yarn install
-          # yarn lint
+          yarn lint
           # yarn test
       - uses: fregante/daily-version-action@v2
         id: daily-version
