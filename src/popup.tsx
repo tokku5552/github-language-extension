@@ -1,20 +1,26 @@
-import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
-import { useForm } from "react-hook-form";
-import { Button, Input, Box, Heading } from "@chakra-ui/react";
-import { ChakraProvider } from "@chakra-ui/react";
-import { FormErrorMessage, FormLabel, FormControl } from "@chakra-ui/react";
 import {
-  getGitHubUsername,
+  Box,
+  Button,
+  ChakraProvider,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+} from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
+import {
   getGitHubStats,
   getGitHubTopLanguage,
-} from "./api/githubReadmeStats";
-import Header from "./components/Header";
+  getGitHubUsername,
+} from './api/githubReadmeStats';
+import Header from './components/Header';
 
 const Popup = () => {
-  const [username, setUsername] = useState("");
-  const [currentStats, setCurrentStats] = useState("");
-  const [currentTopLanguage, setCurrentTopLanguage] = useState("");
+  const [username, setUsername] = useState('');
+  const [currentStats, setCurrentStats] = useState('');
+  const [currentTopLanguage, setCurrentTopLanguage] = useState('');
   const {
     register,
     setValue,
@@ -24,16 +30,16 @@ const Popup = () => {
   } = useForm<FormData>();
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data["username"]);
-    setUsername(data["username"]);
+    console.log(data['username']);
+    setUsername(data['username']);
   });
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const currentURL = tabs[0].url || "";
+      const currentURL = tabs[0].url || '';
       const name = getGitHubUsername(currentURL);
       setUsername(name);
-      setValue("username", name);
+      setValue('username', name);
     });
   }, []);
 
@@ -45,7 +51,7 @@ const Popup = () => {
       setCurrentStats(stats.data);
     };
     console.log(username);
-    if (username !== "") {
+    if (username !== '') {
       console.log(username);
       fetch(username);
     }
@@ -70,10 +76,10 @@ const Popup = () => {
                 <FormLabel>GitHub username</FormLabel>
                 <Input
                   placeholder="GitHub username"
-                  {...register("username", { required: true })}
+                  {...register('username', { required: true })}
                 />
                 <FormErrorMessage>
-                  {errors.username && "GitHub username is required"}
+                  {errors.username && 'GitHub username is required'}
                 </FormErrorMessage>
               </FormControl>
               <Button
@@ -97,5 +103,5 @@ ReactDOM.render(
   <React.StrictMode>
     <Popup />
   </React.StrictMode>,
-  document.getElementById("root")
+  document.getElementById('root')
 );
