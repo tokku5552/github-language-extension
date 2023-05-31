@@ -2,5 +2,14 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base"
-  ]
+  ],
+  "timezone": "Asia/Tokyo",
+  "schedule": [
+    "after 1am on monday",
+    "before 10am on monday"
+  ],
+  "prHourlyLimit": 2,
+  "major": {
+    "enabled": false
+  }
 }
