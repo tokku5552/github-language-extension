@@ -71,13 +71,11 @@ jobs:
         with:
           path: '**/node_modules'
           key: cache-node-modules-${{ hashFiles('yarn.lock') }}
-      - uses: fregante/daily-version-action@v2
-        id: daily-version
       - name: build
         run: yarn build
       - name: Update manifest.json
         run: |
-          npx dot-json@1 dist/manifest.json version ${{ steps.daily-version.outputs.version }}
+          npx dot-json@1 dist/manifest.json version dummy
       - name: Archive
         run: |
           zip -r extension.zip ./dist
