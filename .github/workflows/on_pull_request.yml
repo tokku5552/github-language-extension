@@ -4,6 +4,9 @@ on:
     branches:
       - main
       - develop
+    paths:
+      - 'src/**'
+      - '.github/workflows/on_pull_request.yml'
 jobs:
   prepare:
     runs-on: ubuntu-latest
