@@ -62,7 +62,7 @@ const Popup = () => {
     <>
       <ChakraProvider>
         <Box w="540px">
-          <Header>GitHub Language Stats Extension</Header>
+          <Header />
           <Box p={4}>
             {parse(currentStats)}
             {parse(currentTopLanguage)}
