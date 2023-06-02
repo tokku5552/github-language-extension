@@ -35,7 +35,7 @@ const Popup = () => {
   });
 
   useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const currentURL = tabs[0].url || '';
       const name = getGitHubUsername(currentURL);
       setUsername(name);
