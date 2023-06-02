@@ -7,7 +7,7 @@ export interface StatsBodyProps {
   currentTopLanguage: string;
 }
 
-export function StatsBody({
+export default function StatsBody({
   currentStats,
   currentTopLanguage,
 }: StatsBodyProps) {

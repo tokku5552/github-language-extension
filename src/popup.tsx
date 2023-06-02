@@ -1,16 +1,10 @@
-import { StatsBody } from '@/components/StatsBody';
-import { StatsForm } from '@/components/StatsForm';
+import { getGitHubStats, getGitHubTopLanguage, getGitHubUsername } from '@/api';
+import { Header, StatsBody, StatsForm } from '@/components';
 import { ThemeType } from '@/types/enums';
 import { Box, ChakraProvider, useColorMode } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
-import {
-  getGitHubStats,
-  getGitHubTopLanguage,
-  getGitHubUsername,
-} from './api/githubReadmeStats';
-import Header from './components/Header';
 
 const Popup = () => {
   const [username, setUsername] = useState('');

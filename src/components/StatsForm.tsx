@@ -15,7 +15,11 @@ export interface StatsFormProps {
   formState: FormState<FormData>;
 }
 
-export function StatsForm({ onSubmit, register, formState }: StatsFormProps) {
+export default function StatsForm({
+  onSubmit,
+  register,
+  formState,
+}: StatsFormProps) {
   const { errors } = formState;
   return (
     <>

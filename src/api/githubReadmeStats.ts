@@ -1,5 +1,5 @@
+import { ThemeType } from '@/types/enums';
 import axios from 'axios';
-import { ThemeType } from '../types/enums';
 
 const darkthemeParam = 'theme=algolia';
 
