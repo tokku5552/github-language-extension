@@ -1,15 +1,25 @@
+import { ThemeType } from '@/types/enums';
 import axios from 'axios';
 
-export const getGitHubStats = (username: string) => {
-  return axios.get<string>(
-    `https://github-readme-stats.vercel.app/api?username=${username}&count_private=true&show_icons=true`
-  );
+const darkthemeParam = 'theme=algolia';
+
+export const getGitHubStats = (username: string, themeType: ThemeType) => {
+  const url =
+    themeType === ThemeType.LIGHT
+      ? `https://github-readme-stats.vercel.app/api?username=${username}&count_private=true&show_icons=true`
+      : `https://github-readme-stats.vercel.app/api?username=${username}&count_private=true&show_icons=true&${darkthemeParam}`;
+  return axios.get<string>(url);
 };
 
-export const getGitHubTopLanguage = (username: string) => {
-  return axios.get<string>(
-    `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact`
-  );
+export const getGitHubTopLanguage = (
+  username: string,
+  themeType: ThemeType
+) => {
+  const url =
+    themeType === ThemeType.LIGHT
+      ? `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact`
+      : `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact&${darkthemeParam}`;
+  return axios.get<string>(url);
 };
 
 export const getGitHubUsername = (url: string): string => {

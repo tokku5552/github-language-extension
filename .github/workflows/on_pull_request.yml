@@ -4,6 +4,13 @@ on:
     branches:
       - main
       - develop
+    paths:
+      - 'src/**'
+      - 'webpack/**'
+      - 'yarn.lock'
+      - 'package.json'
+      - 'tsconfig.json'
+      - '.github/workflows/on_pull_request.yml'
 jobs:
   prepare:
     runs-on: ubuntu-latest

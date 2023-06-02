@@ -1,12 +1,11 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import Header from './Header';
+import { Header } from '.';
 
 describe('Header', () => {
-  test('', () => {
-    const { container } = render(<Header>Test Title</Header>);
+  test('rendering', () => {
+    const { container } = render(<Header />);
 
-    // logDOM(screen.getByText('Test Title'));
-    expect(container.innerHTML).toMatch('Test Title');
+    expect(container.innerHTML).toMatch('GitHub Language Stats');
   });
 });
