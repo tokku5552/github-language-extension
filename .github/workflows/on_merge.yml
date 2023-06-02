@@ -26,6 +26,7 @@ jobs:
           yarn install
   release:
     if: github.event.pull_request.merged == true
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -39,6 +40,9 @@ jobs:
         with:
           path: '**/node_modules'
           key: cache-node-modules-${{ hashFiles('yarn.lock') }}
+      - name: yarn install
+        run: |
+          yarn install
       - uses: fregante/daily-version-action@v2
         id: daily-version
       - name: build
