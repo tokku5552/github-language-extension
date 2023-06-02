@@ -19,6 +19,7 @@
     "url": "https://github.com/tokku5552/github-language-extension.git"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.4.4",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",

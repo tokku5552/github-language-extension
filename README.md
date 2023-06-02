@@ -38,6 +38,12 @@ yarn build
 yarn watch
 ```
 
+- delete webpack cache
+
+```bash:
+yarn cache clean
+```
+
 ## Load extension to chrome
 
 Load `dist` directory

@@ -18,5 +18,6 @@
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "prettier.configPath": ".prettierrc.json"
 }
