@@ -6,6 +6,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  useColorMode,
 } from '@chakra-ui/react';
 import parse from 'html-react-parser';
 import React, { useEffect, useState } from 'react';
@@ -17,11 +18,13 @@ import {
   getGitHubUsername,
 } from './api/githubReadmeStats';
 import Header from './components/Header';
+import { ThemeType } from './types/enums';
 
 const Popup = () => {
   const [username, setUsername] = useState('');
   const [currentStats, setCurrentStats] = useState('');
   const [currentTopLanguage, setCurrentTopLanguage] = useState('');
+  const { colorMode } = useColorMode();
   const {
     register,
     setValue,
@@ -47,7 +50,10 @@ const Popup = () => {
   useEffect(() => {
     const fetch = async (username: string) => {
       const stats = await getGitHubStats(username);
-      const lang = await getGitHubTopLanguage(username);
+      const lang = await getGitHubTopLanguage(
+        username,
+        colorMode === 'light' ? ThemeType.LIGHT : ThemeType.DARK
+      );
       setCurrentTopLanguage(lang.data);
       setCurrentStats(stats.data);
     };
@@ -56,7 +62,7 @@ const Popup = () => {
       console.log(username);
       fetch(username);
     }
-  }, [username]);
+  }, [username, colorMode, currentStats, currentTopLanguage]);
 
   return (
     <>

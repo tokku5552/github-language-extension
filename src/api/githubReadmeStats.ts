@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { ThemeType } from '../types/enums';
+
+const darkthemeParam = 'theme=algolia';
 
 export const getGitHubStats = (username: string) => {
   return axios.get<string>(
@@ -6,10 +9,15 @@ export const getGitHubStats = (username: string) => {
   );
 };
 
-export const getGitHubTopLanguage = (username: string) => {
-  return axios.get<string>(
-    `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact`
-  );
+export const getGitHubTopLanguage = (
+  username: string,
+  themeType: ThemeType
+) => {
+  const url =
+    themeType === ThemeType.LIGHT
+      ? `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact`
+      : `https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact&${darkthemeParam}`;
+  return axios.get<string>(url);
 };
 
 export const getGitHubUsername = (url: string): string => {
