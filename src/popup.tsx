@@ -7,6 +7,7 @@ import {
   FormLabel,
   Input,
 } from '@chakra-ui/react';
+import parse from 'html-react-parser';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
@@ -63,8 +64,8 @@ const Popup = () => {
         <Box w="540px">
           <Header>GitHub Language Stats Extension</Header>
           <Box p={4}>
-            <div dangerouslySetInnerHTML={{ __html: currentStats }} />
-            <div dangerouslySetInnerHTML={{ __html: currentTopLanguage }} />
+            {parse(currentStats)}
+            {parse(currentTopLanguage)}
           </Box>
           <Box pb={2} pl={4} pr={4}>
             <form onSubmit={onSubmit}>
