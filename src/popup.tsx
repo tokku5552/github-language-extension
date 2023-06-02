@@ -1,3 +1,6 @@
+import { StatsBody } from '@/components/StatsBody';
+import { StatsForm } from '@/components/StatsForm';
+import { ThemeType } from '@/types/enums';
 import { Box, ChakraProvider, useColorMode } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
@@ -8,9 +11,6 @@ import {
   getGitHubUsername,
 } from './api/githubReadmeStats';
 import Header from './components/Header';
-import { StatsBody } from './components/StatsBody';
-import { StatsForm } from './components/StatsForm';
-import { ThemeType } from './types/enums';
 
 const Popup = () => {
   const [username, setUsername] = useState('');
