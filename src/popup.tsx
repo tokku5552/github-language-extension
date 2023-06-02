@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  ChakraProvider,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  useColorMode,
-} from '@chakra-ui/react';
-import parse from 'html-react-parser';
+import { Box, ChakraProvider, useColorMode } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
@@ -18,6 +8,8 @@ import {
   getGitHubUsername,
 } from './api/githubReadmeStats';
 import Header from './components/Header';
+import { StatsBody } from './components/StatsBody';
+import { StatsForm } from './components/StatsForm';
 import { ThemeType } from './types/enums';
 
 const Popup = () => {
@@ -25,13 +17,7 @@ const Popup = () => {
   const [currentStats, setCurrentStats] = useState('');
   const [currentTopLanguage, setCurrentTopLanguage] = useState('');
   const { colorMode } = useColorMode();
-  const {
-    register,
-    setValue,
-    handleSubmit,
-    formState,
-    formState: { errors },
-  } = useForm<FormData>();
+  const { register, setValue, handleSubmit, formState } = useForm<FormData>();
 
   const onSubmit = handleSubmit((data) => {
     console.log(data['username']);
@@ -49,11 +35,10 @@ const Popup = () => {
 
   useEffect(() => {
     const fetch = async (username: string) => {
-      const stats = await getGitHubStats(username);
-      const lang = await getGitHubTopLanguage(
-        username,
-        colorMode === 'light' ? ThemeType.LIGHT : ThemeType.DARK
-      );
+      const themeType =
+        colorMode === 'light' ? ThemeType.LIGHT : ThemeType.DARK;
+      const stats = await getGitHubStats(username, themeType);
+      const lang = await getGitHubTopLanguage(username, themeType);
       setCurrentTopLanguage(lang.data);
       setCurrentStats(stats.data);
     };
@@ -66,49 +51,27 @@ const Popup = () => {
 
   return (
     <>
-      <ChakraProvider>
-        <Box w="540px">
-          <Header />
-          <Box p={4}>
-            {parse(currentStats)}
-            {parse(currentTopLanguage)}
-          </Box>
-          <Box pb={2} pl={4} pr={4}>
-            <form onSubmit={onSubmit}>
-              <FormControl
-                id="username"
-                isInvalid={!!errors.username}
-                isRequired
-              >
-                <FormLabel>GitHub username</FormLabel>
-                <Input
-                  placeholder="GitHub username"
-                  {...register('username', { required: true })}
-                />
-                <FormErrorMessage>
-                  {errors.username && 'GitHub username is required'}
-                </FormErrorMessage>
-              </FormControl>
-              <Button
-                mt={2}
-                bg="#4299E1"
-                color="white"
-                isLoading={formState.isSubmitting}
-                type="submit"
-              >
-                Submit
-              </Button>
-            </form>
-          </Box>
-        </Box>
-      </ChakraProvider>
+      <Box w="540px">
+        <Header />
+        <StatsBody
+          currentStats={currentStats}
+          currentTopLanguage={currentTopLanguage}
+        />
+        <StatsForm
+          onSubmit={onSubmit}
+          register={register}
+          formState={formState}
+        />
+      </Box>
     </>
   );
 };
 
 ReactDOM.render(
   <React.StrictMode>
-    <Popup />
+    <ChakraProvider>
+      <Popup />
+    </ChakraProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

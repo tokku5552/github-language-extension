@@ -3,10 +3,12 @@ import { ThemeType } from '../types/enums';
 
 const darkthemeParam = 'theme=algolia';
 
-export const getGitHubStats = (username: string) => {
-  return axios.get<string>(
-    `https://github-readme-stats.vercel.app/api?username=${username}&count_private=true&show_icons=true`
-  );
+export const getGitHubStats = (username: string, themeType: ThemeType) => {
+  const url =
+    themeType === ThemeType.LIGHT
+      ? `https://github-readme-stats.vercel.app/api?username=${username}&count_private=true&show_icons=true`
+      : `https://github-readme-stats.vercel.app/api?username=${username}&count_private=true&show_icons=true&${darkthemeParam}`;
+  return axios.get<string>(url);
 };
 
 export const getGitHubTopLanguage = (
