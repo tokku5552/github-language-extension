@@ -37,6 +37,7 @@ jobs:
         id: new-pr
         with:
           commit-message: release
+          base: main
           delete-branch: true
           title: '[${{ env.CURRENT_DATETIME }}]auto release'
           body: '[${{ env.CURRENT_DATETIME }}]auto release'
