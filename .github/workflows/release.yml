@@ -1,0 +1,32 @@
+name: schedule create release pull request
+
+on:
+  schedule:
+    - cron: 0 6 * * 5
+  push:
+    branches:
+      - develop
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout develop branch
+        uses: actions/checkout@v2
+        with:
+          ref: develop
+      - name: Set current datetime as env variable
+        env:
+          TZ: 'Asia/Tokyo'
+        run: echo "CURRENT_DATETIME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+      - name: write .version
+        run: echo ${{ env.CURRENT_DATETIME }} >> .version
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        id: new-pr
+        with:
+          commit-message: release
+          base: main
+          delete-branch: true
+          title: '[${{ env.CURRENT_DATETIME }}]auto release'
+          body: '[${{ env.CURRENT_DATETIME }}]auto release'
+          branch: 'release/gha_${{ env.CURRENT_DATETIME }}'
