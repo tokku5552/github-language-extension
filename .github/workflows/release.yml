@@ -1,0 +1,30 @@
+name: schedule create release pull request
+
+on:
+  schedule:
+    - cron: 0 6 * * 5
+  pull_request:
+    branches:
+      - develop
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: checkout develop branch
+        uses: actions/checkout@v1
+        with:
+          ref: develop
+      # - name: install hub
+      #   uses: geertvdc/setup-hub@v1.0.0
+      # - name: create PR
+      #   env:
+      #     GITHUB_USER: ${{ secrets.GITHUB_USER }}
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     hub pull-request -b master -m "[Scheduled]develop to master"
+      - name: Create release pr
+        if: ${{ steps.check_pr.outputs.count == 0 }}
+        run: |
+          gh pr create -B "main" -t "[Scheduled]develop to main" -b "develop"
