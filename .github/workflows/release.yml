@@ -18,12 +18,12 @@ jobs:
         env:
           TZ: 'Asia/Tokyo'
         run: echo "CURRENT_DATETIME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-      - name: Create new branch
-        run: |
-          git switch -c release/gha_${{ env.CURRENT_DATETIME }}
-          git push -u origin release/gha_${{ env.CURRENT_DATETIME }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Create new branch
+      #   run: |
+      #     git switch -c release/gha_${{ env.CURRENT_DATETIME }}
+      #     git push -u origin release/gha_${{ env.CURRENT_DATETIME }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # - name: install hub
       #   uses: geertvdc/setup-hub@v1.0.0
       # - name: create PR
@@ -32,6 +32,15 @@ jobs:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #   run: |
       #     hub pull-request -b master -m "[Scheduled]develop to master"
-      - name: Create release pr
-        run: |
-          gh pr create -B "main" -t "[Scheduled]develop to main" -b release/gha_${{ env.CURRENT_DATETIME }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        id: new-pr
+        with:
+          commit-message: release
+          delete-branch: true
+          title: '[${{ env.CURRENT_DATETIME }}]auto release'
+          body: '[${{ env.CURRENT_DATETIME }}]auto release'
+          branch: 'release/gha_${{ env.CURRENT_DATETIME }}'
+      # - name: Create release pr
+      #   run: |
+      #     gh pr create -B "main" -t "[Scheduled]develop to main" -b release/gha_${{ env.CURRENT_DATETIME }}
