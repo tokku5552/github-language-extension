@@ -17,11 +17,16 @@ jobs:
         with:
           ref: develop
 
+      - name: Set current datetime as env variable
+        env:
+          TZ: 'Asia/Tokyo'
+        run: echo "CURRENT_DATETIME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
       - name: Create Branch
-        run: git checkout -b release/gha_${{ github.run_id }}
+        run: git checkout -b release/gha_${{ env.CURRENT_DATETIME }}
 
       - name: Push Branch
-        run: git push origin release/gha_${{ github.run_id }}
+        run: git push origin release/gha_${{ env.CURRENT_DATETIME }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
@@ -30,6 +35,6 @@ jobs:
           commit-message: release
           base: main
           delete-branch: true
-          title: '[${{ github.run_id }}]auto release'
-          body: '[${{ github.run_id }}]auto release'
-          branch: 'release/gha_${{ github.run_id }}'
+          title: '[${{ env.CURRENT_DATETIME }}]auto release'
+          body: '[${{ env.CURRENT_DATETIME }}]auto release'
+          branch: 'release/gha_${{ env.CURRENT_DATETIME }}'
