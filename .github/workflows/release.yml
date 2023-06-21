@@ -13,7 +13,7 @@ jobs:
       - name: checkout develop branch
         uses: actions/checkout@v3
         with:
-          ref: develop
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - name: Set current datetime as env variable
         env:
