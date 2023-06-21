@@ -1,0 +1,33 @@
+name: create_release_pr
+on:
+  schedule:
+    - cron: 0 6 * * 5
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout develop branch
+        uses: actions/checkout@v2
+        with:
+          ref: develop
+
+      - name: Set current datetime as env variable
+        env:
+          TZ: 'Asia/Tokyo'
+        run: echo "CURRENT_DATETIME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
+      - name: Create Branch
+        run: git checkout -b release/gha_${{ env.CURRENT_DATETIME }}
+
+      - name: Push Branch
+        run: git push origin release/gha_${{ env.CURRENT_DATETIME }}
+
+      - name: Create Pull Request
+        env:
+          REVIEWERS: 'tokku5552'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: release/gha_${{ env.CURRENT_DATETIME }}
+        run: |
+          hub pull-request -m "[bot(create_release_pr)]: created at ${{ env.CURRENT_DATETIME }}" -b main -h $BRANCH_NAME  -r "$REVIEWERS"
