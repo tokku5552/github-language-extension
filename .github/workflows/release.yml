@@ -6,24 +6,23 @@ on:
   push:
     branches:
       - develop
+
 jobs:
   create_pr:
     runs-on: ubuntu-latest
+
     steps:
-      - name: checkout develop branch
+      - name: Checkout develop branch
         uses: actions/checkout@v2
         with:
           ref: develop
-      - name: Set current datetime as env variable
-        env:
-          TZ: 'Asia/Tokyo'
-        run: echo "CURRENT_DATETIME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-      # - name: write .version
-      #   run: echo ${{ env.CURRENT_DATETIME }} >> .version
+
       - name: Create Branch
-        run: git checkout -b release/gha_${{ env.CURRENT_DATETIME }}
+        run: git checkout -b release/gha_${{ github.run_id }}
+
       - name: Push Branch
-        run: git push origin release/gha_${{ env.CURRENT_DATETIME }}
+        run: git push origin release/gha_${{ github.run_id }}
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         id: new-pr
@@ -31,14 +30,6 @@ jobs:
           commit-message: release
           base: main
           delete-branch: true
-          title: '[${{ env.CURRENT_DATETIME }}]auto release'
-          body: '[${{ env.CURRENT_DATETIME }}]auto release'
-          branch: 'release/gha_${{ env.CURRENT_DATETIME }}'
-      # - name: Handle merge conflicts
-      #   run: |
-      #     if [ "${{ steps.new-pr.outcome }}" == "failure" ]; then
-      #       git checkout --ours .version
-      #       git add .version
-      #       git commit --no-edit
-      #       git push origin HEAD
-      #     fi
+          title: '[${{ github.run_id }}]auto release'
+          body: '[${{ github.run_id }}]auto release'
+          branch: 'release/gha_${{ github.run_id }}'
