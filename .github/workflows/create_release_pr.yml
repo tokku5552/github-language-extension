@@ -1,4 +1,4 @@
-name: auto_release
+name: create_release_pr
 on:
   schedule:
     - cron: 0 6 * * 5
@@ -30,4 +30,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: release/gha_${{ env.CURRENT_DATETIME }}
         run: |
-          hub pull-request -m "[${{ env.CURRENT_DATETIME }}]auto release" -b main -h $BRANCH_NAME  -r "$REVIEWERS"
+          hub pull-request -m "[bot(create_release_pr)]: created at ${{ env.CURRENT_DATETIME }}" -b main -h $BRANCH_NAME  -r "$REVIEWERS"
