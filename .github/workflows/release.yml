@@ -30,3 +30,11 @@ jobs:
           title: '[${{ env.CURRENT_DATETIME }}]auto release'
           body: '[${{ env.CURRENT_DATETIME }}]auto release'
           branch: 'release/gha_${{ env.CURRENT_DATETIME }}'
+      - name: Handle merge conflicts
+        run: |
+          if [ "${{ steps.new-pr.outcome }}" == "failure" ]; then
+            git checkout --ours .version
+            git add .version
+            git commit --no-edit
+            git push origin HEAD
+          fi
