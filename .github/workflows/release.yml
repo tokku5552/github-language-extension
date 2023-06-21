@@ -32,6 +32,8 @@ jobs:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       #   run: |
       #     hub pull-request -b master -m "[Scheduled]develop to master"
+      - name: write .version
+        run: echo ${{ env.CURRENT_DATETIME }} >> .version
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         id: new-pr
