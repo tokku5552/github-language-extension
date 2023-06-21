@@ -1,0 +1,34 @@
+name: create_pr_main_to_develop
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v2
+        with:
+          ref: main
+
+      - name: Set current datetime as env variable
+        env:
+          TZ: 'Asia/Tokyo'
+        run: echo "CURRENT_DATETIME=$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
+      - name: Create Branch
+        run: git checkout -b merge/gha_${{ env.CURRENT_DATETIME }}
+
+      - name: Push Branch
+        run: git push origin merge/gha_${{ env.CURRENT_DATETIME }}
+
+      - name: Create Pull Request
+        env:
+          REVIEWERS: 'tokku5552'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: merge/gha_${{ env.CURRENT_DATETIME }}
+        run: |
+          hub pull-request -m "[bot(create_pr_main_to_develop)]: created at ${{ env.CURRENT_DATETIME }}" -b develop -h $BRANCH_NAME  -r "$REVIEWERS"
