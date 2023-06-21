@@ -1,4 +1,4 @@
-name: on_pull_request
+name: ci
 on:
   pull_request:
     branches:
