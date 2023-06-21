@@ -1,11 +1,7 @@
-name: schedule create release pull request
-
+name: auto_release
 on:
   schedule:
     - cron: 0 6 * * 5
-  push:
-    branches:
-      - develop
 
 jobs:
   create_pr:
@@ -28,19 +24,10 @@ jobs:
       - name: Push Branch
         run: git push origin release/gha_${{ env.CURRENT_DATETIME }}
 
-      # - name: Create Pull Request
-      #   uses: peter-evans/create-pull-request@v5
-      #   id: new-pr
-      #   with:
-      #     commit-message: release
-      #     base: main
-      #     title: '[${{ env.CURRENT_DATETIME }}]auto release'
-      #     body: '[${{ env.CURRENT_DATETIME }}]auto release'
-      #     branch: 'release/gha_${{ env.CURRENT_DATETIME }}'
       - name: Create Pull Request
         env:
           REVIEWERS: 'tokku5552'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: release/gha_${{ env.CURRENT_DATETIME }}
         run: |
-          hub pull-request -m "[${{ env.CURRENT_DATETIME }}]auto release" -b main -h release/gha_${{ env.CURRENT_DATETIME }}  -r "tokku5552"
+          hub pull-request -m "[${{ env.CURRENT_DATETIME }}]auto release" -b main -h $BRANCH_NAME  -r "$REVIEWERS"
