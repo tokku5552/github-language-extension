@@ -1,0 +1,26 @@
+cicd:
+  - github/workflows/**/*
+code:
+  - src/**/*
+  - package.json
+  - yarn.lock
+config:
+  - .vscode/**/*
+  - .eslintrc.json
+  - .eslintignore
+  - .prettierrc
+  - .prettierignore
+  - .gitignore
+  - jest.config.js
+  - webpack/**/*
+  - renovate.json
+  - tsconfig.json
+public:
+  - public/**/*
+documentation:
+  - README.md
+  - LICENSE
+  - docs/**/*
+dependencies:
+  - package.json
+  - yarn.lock
