@@ -3,7 +3,7 @@ import { Header, StatsBody, StatsForm } from '@/components';
 import { ThemeType } from '@/types/enums';
 import { Box, ChakraProvider, useColorMode } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { useForm } from 'react-hook-form';
 
 const Popup = () => {
@@ -61,11 +61,12 @@ const Popup = () => {
   );
 };
 
-ReactDOM.render(
+const container = document.createElement('root');
+const root = createRoot(container);
+root.render(
   <React.StrictMode>
     <ChakraProvider>
       <Popup />
     </ChakraProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
