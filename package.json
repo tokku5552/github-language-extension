@@ -4,8 +4,9 @@
   "description": "github-language-extension",
   "main": "index.js",
   "scripts": {
-    "watch": "INLINE_RUNTIME_CHUNK=false webpack --config webpack/webpack.dev.js --watch",
-    "build": "INLINE_RUNTIME_CHUNK=false webpack --config webpack/webpack.prod.js",
+    "dev": "yarn watch",
+    "watch": "cp -p assets/icon-dev.png public/icon.png && INLINE_RUNTIME_CHUNK=false webpack --config webpack/webpack.dev.js --watch",
+    "build": "cp -p assets/icon.png public/icon.png && INLINE_RUNTIME_CHUNK=false webpack --config webpack/webpack.prod.js",
     "clean": "rimraf dist",
     "lint": "run-p -c -l lint:eslint lint:prettier",
     "lint:eslint": "eslint . ",
