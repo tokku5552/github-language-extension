@@ -34,7 +34,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
-    "@types/chrome": "0.0.242",
+    "@types/chrome": "0.0.243",
     "@types/jest": "^29.2.4",
     "@types/react": "^18.0.26",
     "@types/react-dom": "^18.0.10",
