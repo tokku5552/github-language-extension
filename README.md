@@ -2,7 +2,7 @@
 
 GitHub Language Stats Extension(Chrome Extension)
 
-![](docs/image.png)
+![image](docs/image.png)
 
 ## Prerequisites
 
@@ -14,10 +14,9 @@ GitHub Language Stats Extension(Chrome Extension)
 |npm|8.19.2|
 |yarn|1.22.19|
 
-
 ## Option
 
-* [Visual Studio Code](https://code.visualstudio.com/)
+- [Visual Studio Code](https://code.visualstudio.com/)
 
 ## Setup
 
@@ -32,7 +31,6 @@ yarn build
 ```
 
 ## Build in watch mode
-
 
 ```bash:
 yarn watch
@@ -49,4 +47,5 @@ yarn cache clean
 Load `dist` directory
 
 ## Test
+
 `npx jest` or `yarn test`
