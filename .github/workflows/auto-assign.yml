@@ -1,0 +1,21 @@
+name: auto assign
+
+on:
+  pull_request:
+    types: [opened, unassigned, synchronize, edited]
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  GH_REPO: ${{ github.repository }}
+  NUMBER: ${{ github.event.pull_request.number }}
+  ASSIGNEE: ${{ github.event.pull_request.user.login }}
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - run: cat $GITHUB_EVENT_PATH
+      - name: Add assignee
+        if: ${{ !endsWith( github.event.pull_request.user.login, '[bot]') }}
+        run: gh pr edit $NUMBER --add-assignee $ASSIGNEE
