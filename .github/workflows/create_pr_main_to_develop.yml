@@ -25,6 +25,11 @@ jobs:
       - name: Push Branch
         run: git push origin merge/gha_${{ env.CURRENT_DATETIME }}
 
+      - name: Install Hub
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hub
+
       - name: Create Pull Request
         env:
           REVIEWERS: 'tokku5552'
