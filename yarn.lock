@@ -3884,10 +3884,10 @@ hosted-git-info@^2.1.4:
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.8.9.tgz#dffc0bf9a21c02209090f2aa69429e1414daf3f9"
   integrity sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==
 
-html-dom-parser@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/html-dom-parser/-/html-dom-parser-5.0.0.tgz#7b98f39191f47d906e6f522c706b4e513b6bfc9d"
-  integrity sha512-Q3CsICOy3FuGZvWLTpbB0RDB3dVLiv2/1qWB49Rnedc0uPc0d6LtVZqmGZ6X+DUC7V3OdkMD/YWAmJlJnmoZFQ==
+html-dom-parser@5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/html-dom-parser/-/html-dom-parser-5.0.1.tgz#af21fcefa7b68e6e8fdef4e559e0c15915269e6e"
+  integrity sha512-8MRxHcUjkpfkCEvf3t+r1nO7KCHgfFah23tAskZHgiOFsP5/24uxJnoS6C2Hq+p/cAzpPUiKb8vjywH6ixEgzQ==
   dependencies:
     domhandler "5.0.3"
     htmlparser2 "9.0.0"
@@ -3905,14 +3905,14 @@ html-escaper@^2.0.0:
   integrity sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==
 
 html-react-parser@^4.0.0:
-  version "4.2.4"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-4.2.4.tgz#789e806867042860ef019adc13de90d8238923c9"
-  integrity sha512-LcQu2s76FYmVrGCeY2MbeT6iaVbEBNGLAYvnJBKNR5Dq0sfF7c9Q18emZARYVadPYxJkRK2iTn8izP7/BP1b7g==
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-4.2.5.tgz#47536f20a65ee7adfb5e6c5172da498262e3fcc1"
+  integrity sha512-D9pGpsoBf50ys07PvXJ96FcRwGJ8ywF0GNfTnnO8oTXbErvxrNtWBLVREy+Rb79+NhkZLGVlLLw1XExcakXI2w==
   dependencies:
     domhandler "5.0.3"
-    html-dom-parser "5.0.0"
+    html-dom-parser "5.0.1"
     react-property "2.0.0"
-    style-to-js "1.1.4"
+    style-to-js "1.1.5"
 
 htmlparser2@9.0.0:
   version "9.0.0"
@@ -3997,10 +3997,10 @@ inherits@2:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-inline-style-parser@0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/inline-style-parser/-/inline-style-parser-0.1.1.tgz#ec8a3b429274e9c0a1f1c4ffa9453a7fef72cea1"
-  integrity sha512-7NXolsK4CAS5+xvdj5OMMbI962hU/wvwoxk+LWR9Ek9bVtyuuYScDN6eS0rUm6TxApFpw7CX1o4uJzcd4AyD3Q==
+inline-style-parser@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/inline-style-parser/-/inline-style-parser-0.2.2.tgz#d498b4e6de0373458fc610ff793f6b14ebf45633"
+  integrity sha512-EcKzdTHVe8wFVOGEYXiW9WmJXPjqi1T+234YpJr98RiFYKHV3cdy1+3mkTE+KHTHxFFLH51SfaGOoUdW+v7ViQ==
 
 internal-slot@^1.0.3, internal-slot@^1.0.5:
   version "1.0.5"
@@ -5956,19 +5956,19 @@ strip-json-comments@^3.1.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
-style-to-js@1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/style-to-js/-/style-to-js-1.1.4.tgz#5fa07a181ec3ca354d699edf442549e0ac61ed32"
-  integrity sha512-zEeU3vy9xL/hdLBFmzqjhm+2vJ1Y35V0ctDeB2sddsvN1856OdMZUCOOfKUn3nOjjEKr6uLhOnY4CrX6gLDRrA==
+style-to-js@1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/style-to-js/-/style-to-js-1.1.5.tgz#cb6135c87de9f0b4e2d13579bd602754df1fb249"
+  integrity sha512-gEX6m+t79LYDpNZHlk+h+pR5HJPwit4O4qY7jDgutpUNV0vyJA0h+DdGSpmx0cb6iYKux2Eduy+m/KEo8mZAog==
   dependencies:
-    style-to-object "0.4.2"
+    style-to-object "1.0.0"
 
-style-to-object@0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/style-to-object/-/style-to-object-0.4.2.tgz#a8247057111dea8bd3b8a1a66d2d0c9cf9218a54"
-  integrity sha512-1JGpfPB3lo42ZX8cuPrheZbfQ6kqPPnPHlKMyeRYtfKD+0jG+QsXgXN57O/dvJlzlB2elI6dGmrPnl5VPQFPaA==
+style-to-object@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/style-to-object/-/style-to-object-1.0.0.tgz#9b252385bdca3c0624e58686314a8d88d6b2956a"
+  integrity sha512-WOxKn2+5Gdr6i0jRMaBAL02XequQZpmnXchDA9HYoG0n5T4HWT1x1iRWluN1RFZxcuHNJPugd3LWL1/Pp3IqcA==
   dependencies:
-    inline-style-parser "0.1.1"
+    inline-style-parser "0.2.2"
 
 stylis@4.2.0:
   version "4.2.0"
