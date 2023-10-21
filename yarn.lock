@@ -3911,9 +3911,9 @@ html-escaper@^2.0.0:
   integrity sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==
 
 html-react-parser@^4.0.0:
-  version "4.2.7"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-4.2.7.tgz#463282eb61632f87852f7c8718a5851c304e4331"
-  integrity sha512-2Uf9CdzqDQ/CrUiooSEB4IcHcB8bmZKhgVCzNMAb66J1L+fmxLS/tAGwjfnF6P9WNUCkbx/dGb31u0gGIKmyfA==
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-4.2.8.tgz#3896850aaf2a83c42a46745e02d5425fbcdff309"
+  integrity sha512-IUIU4f8Yf1rm4fT6HazoiO/TC9ZbqvTHJKJB5Klm20mlFyYb2fKfz4EP8UpkHnFZ26hlS5uz7QzZhbxABf0w1Q==
   dependencies:
     domhandler "5.0.3"
     html-dom-parser "5.0.2"
