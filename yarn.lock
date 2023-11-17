@@ -1767,9 +1767,9 @@
     redent "^3.0.0"
 
 "@testing-library/react@^14.0.0":
-  version "14.1.0"
-  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-14.1.0.tgz#01d64915111db99b50f8361d51d7217606805989"
-  integrity sha512-hcvfZEEyO0xQoZeHmUbuMs7APJCGELpilL7bY+BaJaMP57aWc6q1etFwScnoZDheYjk4ESdlzPdQ33IbsKAK/A==
+  version "14.1.2"
+  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-14.1.2.tgz#a2b9e9ee87721ec9ed2d7cfc51cc04e474537c32"
+  integrity sha512-z4p7DVBTPjKM5qDZ0t5ZjzkpSNb+fZy1u6bzO7kk8oeGagpPCAtgh4cx1syrfp7a+QWkM021jGqjJaxJJnXAZg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^9.0.0"
@@ -3011,14 +3011,14 @@ dedent@^1.0.0:
   integrity sha512-+LxW+KLWxu3HW3M2w2ympwtqPrqYRzU8fqi6Fhd18fBALe15blJPI/I4+UHveMVG6lJqB4JNd4UG0S5cnVHwIg==
 
 deep-equal@^2.0.5:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-2.2.2.tgz#9b2635da569a13ba8e1cc159c2f744071b115daa"
-  integrity sha512-xjVyBf0w5vH0I42jdAZzOKVldmPgSulmiyPRywoyq7HXC9qdgo17kxJE+rdnif5Tz6+pIrpJI8dCpMNLIGkUiA==
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-2.2.3.tgz#af89dafb23a396c7da3e862abc0be27cf51d56e1"
+  integrity sha512-ZIwpnevOurS8bpT4192sqAowWM76JDKSHYzMLty3BZGSswgq6pBaH3DhCSW5xVAZICZyKdOBPjwww5wfgT/6PA==
   dependencies:
     array-buffer-byte-length "^1.0.0"
-    call-bind "^1.0.2"
+    call-bind "^1.0.5"
     es-get-iterator "^1.1.3"
-    get-intrinsic "^1.2.1"
+    get-intrinsic "^1.2.2"
     is-arguments "^1.1.1"
     is-array-buffer "^3.0.2"
     is-date-object "^1.0.5"
@@ -3028,11 +3028,11 @@ deep-equal@^2.0.5:
     object-is "^1.1.5"
     object-keys "^1.1.1"
     object.assign "^4.1.4"
-    regexp.prototype.flags "^1.5.0"
+    regexp.prototype.flags "^1.5.1"
     side-channel "^1.0.4"
     which-boxed-primitive "^1.0.2"
     which-collection "^1.0.1"
-    which-typed-array "^1.1.9"
+    which-typed-array "^1.1.13"
 
 deep-is@^0.1.3:
   version "0.1.4"
@@ -5751,7 +5751,7 @@ regenerator-runtime@^0.14.0:
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.14.0.tgz#5e19d68eb12d486f797e15a3c6a918f7cec5eb45"
   integrity sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==
 
-regexp.prototype.flags@^1.4.3, regexp.prototype.flags@^1.5.0:
+regexp.prototype.flags@^1.4.3:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/regexp.prototype.flags/-/regexp.prototype.flags-1.5.0.tgz#fe7ce25e7e4cca8db37b6634c8a2c7009199b9cb"
   integrity sha512-0SutC3pNudRKgquxGoRGIz946MZVHqbNfPjBdxeOhBrdgDKlRoXmYLQN9xRbrR09ZXWeGAdPuif7egofn6v5LA==
@@ -5760,7 +5760,7 @@ regexp.prototype.flags@^1.4.3, regexp.prototype.flags@^1.5.0:
     define-properties "^1.2.0"
     functions-have-names "^1.2.3"
 
-regexp.prototype.flags@^1.5.1:
+regexp.prototype.flags@^1.5.0, regexp.prototype.flags@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/regexp.prototype.flags/-/regexp.prototype.flags-1.5.1.tgz#90ce989138db209f81492edd734183ce99f9677e"
   integrity sha512-sy6TXMN+hnP/wMy+ISxg3krXx7BAtWVO4UouuCN/ziM9UEne0euamVNafDfvC83bRNr95y0V5iijeDQFUNpvrg==
@@ -6742,7 +6742,7 @@ which-collection@^1.0.1:
     is-weakmap "^2.0.1"
     is-weakset "^2.0.1"
 
-which-typed-array@^1.1.10, which-typed-array@^1.1.9:
+which-typed-array@^1.1.10:
   version "1.1.11"
   resolved "https://registry.yarnpkg.com/which-typed-array/-/which-typed-array-1.1.11.tgz#99d691f23c72aab6768680805a271b69761ed61a"
   integrity sha512-qe9UWWpkeG5yzZ0tNYxDmd7vo58HDBc39mZ0xWWpolAGADdFOzkfamWLDxkOWcvHQKVmdTyQdLD4NOfjLWTKew==
@@ -6753,7 +6753,7 @@ which-typed-array@^1.1.10, which-typed-array@^1.1.9:
     gopd "^1.0.1"
     has-tostringtag "^1.0.0"
 
-which-typed-array@^1.1.11, which-typed-array@^1.1.13:
+which-typed-array@^1.1.11, which-typed-array@^1.1.13, which-typed-array@^1.1.9:
   version "1.1.13"
   resolved "https://registry.yarnpkg.com/which-typed-array/-/which-typed-array-1.1.13.tgz#870cd5be06ddb616f504e7b039c4c24898184d36"
   integrity sha512-P5Nra0qjSncduVPEAr7xhoF5guty49ArDTwzJ/yNuPIbZppyRxFQsRCWrocxIY+CnMVG+qfbU2FmDKyvSGClow==
