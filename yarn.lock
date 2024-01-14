@@ -1810,10 +1810,10 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
-"@types/chrome@0.0.254":
-  version "0.0.254"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.254.tgz#f1caadc129134f71bfaa29f9f0295939048da173"
-  integrity sha512-svkOGKwA+6ZZuk9xtrYun8MYpNY/9hD17rgZ19v3KunhsK1ZOKaMESw12/1AXLh1u3UPA8jQIRi2370DXv9wgw==
+"@types/chrome@0.0.256":
+  version "0.0.256"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.0.256.tgz#366b52f8f5a2d8119ade9eef2519692e6f987ff8"
+  integrity sha512-NleTQw4DNzhPwObLNuQ3i3nvX1rZ1mgnx5FNHc2KP+Cj1fgd3BrT5yQ6Xvs+7H0kNsYxCY+lxhiCwsqq3JwtEg==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -1956,9 +1956,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^18.0.26":
-  version "18.2.46"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.46.tgz#f04d6c528f8f136ea66333bc66abcae46e2680df"
-  integrity sha512-nNCvVBcZlvX4NU1nRRNV/mFl1nNRuTuslAJglQsq+8ldXe5Xv0Wd2f7WTE3jOxhLH2BFfiZGC6GCp+kHQbgG+w==
+  version "18.2.47"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.47.tgz#85074b27ab563df01fbc3f68dc64bf7050b0af40"
+  integrity sha512-xquNkkOirwyCgoClNk85BjP+aqnIS+ckAJ8i37gAbDs14jfW/J23f2GItAf33oiUPQnqNMALiFeoM9Y5mbjpVQ==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -2551,11 +2551,11 @@ available-typed-arrays@^1.0.5:
   integrity sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==
 
 axios@^1.2.1:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.3.tgz#7f50f23b3aa246eff43c54834272346c396613f4"
-  integrity sha512-fWyNdeawGam70jXSVlKl+SUNVcL6j6W79CuSIPfi6HnDUmSCH6gyUys/HrqHeA/wU0Az41rRgean494d0Jb+ww==
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.5.tgz#2c090da14aeeab3770ad30c3a1461bc970fb0cd8"
+  integrity sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==
   dependencies:
-    follow-redirects "^1.15.0"
+    follow-redirects "^1.15.4"
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
@@ -3742,10 +3742,10 @@ focus-lock@^1.0.0:
   dependencies:
     tslib "^2.0.3"
 
-follow-redirects@^1.15.0:
-  version "1.15.3"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.3.tgz#fe2f3ef2690afce7e82ed0b44db08165b207123a"
-  integrity sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==
+follow-redirects@^1.15.4:
+  version "1.15.4"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.4.tgz#cdc7d308bf6493126b17ea2191ea0ccf3e535adf"
+  integrity sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==
 
 for-each@^0.3.3:
   version "0.3.3"
@@ -5643,9 +5643,9 @@ react-focus-lock@^2.9.4:
     use-sidecar "^1.1.2"
 
 react-hook-form@^7.41.0:
-  version "7.49.2"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.49.2.tgz#6fb2742e1308020f26cb1915c7012b6c07b11ade"
-  integrity sha512-TZcnSc17+LPPVpMRIDNVITY6w20deMdNi6iehTFLV1x8SqThXGwu93HjlUVU09pzFgZH7qZOvLMM7UYf2ShAHA==
+  version "7.49.3"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.49.3.tgz#576a4567f8a774830812f4855e89f5da5830435c"
+  integrity sha512-foD6r3juidAT1cOZzpmD/gOKt7fRsDhXXZ0y28+Al1CHgX+AY1qIN9VSIIItXRq1dN68QrRwl1ORFlwjBaAqeQ==
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
