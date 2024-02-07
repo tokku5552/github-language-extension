@@ -1,7 +1,7 @@
 name: create_release_pr
 on:
   schedule:
-    - cron: 0 6 * * 5
+    - cron: 0 6 * * 1
 
 jobs:
   create_pr:
@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout develop branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: develop
 
