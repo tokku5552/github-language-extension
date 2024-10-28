@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ChakraProvider } from '@chakra-ui/react';
 import '@testing-library/jest-dom/extend-expect';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
@@ -36,7 +37,11 @@ describe('StatsForm', () => {
       register: registerMock,
       formState: formStateMock,
     };
-    render(<StatsForm {...defaultProps} {...props} />);
+    render(
+      <ChakraProvider>
+        <StatsForm {...defaultProps} {...props} />
+      </ChakraProvider>
+    );
   };
 
   test('renders StatsForm component', () => {
