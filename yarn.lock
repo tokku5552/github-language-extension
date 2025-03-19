@@ -375,9 +375,9 @@
     "@babel/helper-plugin-utils" "^7.22.5"
 
 "@babel/runtime@^7.0.0", "@babel/runtime@^7.12.13":
-  version "7.26.9"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.26.9.tgz#aa4c6facc65b9cb3f87d75125ffd47781b475433"
-  integrity sha512-aA63XwOkcl4xxQa3HjPMqOP6LiK0ZDv3mUPYEFXkpHbaFjtGggE1A61FjFzJnB+p7/oy2gA8E+rcBNl/zC1tMg==
+  version "7.26.10"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.26.10.tgz#a07b4d8fa27af131a633d7b3524db803eb4764c2"
+  integrity sha512-2WJMeRQPHKSPemqk/awGrAiuFfzBmOIPXKizAsVhWH9YJqLZ0H+HS4c8loHGgW6utJ3E/ejXQUsiGaQy2NZ9Fw==
   dependencies:
     regenerator-runtime "^0.14.0"
 
@@ -503,9 +503,9 @@
   integrity sha512-l5QdBgwrAg3Sc2BRqtNkJpfuLw/pWRDwwT58J6c4PqQT6wzXxyNa8Q0PForu1ltB5qEiFb1kxr/F/HO1EwNa6g==
 
 "@chakra-ui/react@^2.4.4":
-  version "2.10.6"
-  resolved "https://registry.yarnpkg.com/@chakra-ui/react/-/react-2.10.6.tgz#12460f6b6adcafb24b926d27f65438cad1908ec1"
-  integrity sha512-9cdzcUR3LV3E2as0QhZhHAH5qjbyspV12kU1E1Ibcv6/uKUi6bIfPfMSC6R/Tw8Beqhn2ClJFPqjtXzL+C0knQ==
+  version "2.10.7"
+  resolved "https://registry.yarnpkg.com/@chakra-ui/react/-/react-2.10.7.tgz#6718228d9236f4826e117ef5ae49f310a80a5324"
+  integrity sha512-GX1dCmnvrxxyZEofDX9GMAtRakZJKnUqFM9k8qhaycPaeyfkiTNNTjhPNX917hgVx1yhC3kcJOs5IeC7yW56/g==
   dependencies:
     "@chakra-ui/hooks" "2.4.4"
     "@chakra-ui/styled-system" "2.12.2"
@@ -1307,9 +1307,9 @@
     "@types/lodash" "*"
 
 "@types/lodash@*":
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.15.tgz#12d4af0ed17cc7600ce1f9980cec48fc17ad1e89"
-  integrity sha512-w/P33JFeySuhN6JLkysYUK2gEmy9kHHFN7E8ro0tkfmlDOgxBDzWEZ/J8cWA+fHqFevpswDTFZnDx+R9lbL6xw==
+  version "4.17.16"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.16.tgz#94ae78fab4a38d73086e962d0b65c30d816bfb0a"
+  integrity sha512-HX7Em5NYQAXKW+1T+FiuG27NGwzJfCX3s1GjOa7ujxZa52kjJLOr4FUxT+giF6Tgxv1e+/czV/iTtBw27WTU9g==
 
 "@types/node@*":
   version "22.13.5"
