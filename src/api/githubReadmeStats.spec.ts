@@ -29,6 +29,15 @@ describe('githubReadmeStats', () => {
         'https://github-readme-stats.vercel.app/api?username=test_user&count_private=true&show_icons=true&theme=algolia',
       expectedResult: { data: 'test' },
     },
+    {
+      username: 'user name',
+      themeType: ThemeType.LIGHT,
+      expectedUrl:
+        `https://github-readme-stats.vercel.app/api?username=${encodeURIComponent(
+          'user name'
+        )}&count_private=true&show_icons=true`,
+      expectedResult: { data: 'test' },
+    },
   ])(
     'getGitHubStats with username=%s and themeType=%s',
     async ({ username, themeType, expectedUrl, expectedResult }) => {
@@ -52,6 +61,15 @@ describe('githubReadmeStats', () => {
       themeType: ThemeType.DARK,
       expectedUrl:
         'https://github-readme-stats.vercel.app/api/top-langs/?username=test_user&layout=compact&theme=algolia',
+      expectedResult: { data: 'test' },
+    },
+    {
+      username: 'user name',
+      themeType: ThemeType.LIGHT,
+      expectedUrl:
+        `https://github-readme-stats.vercel.app/api/top-langs/?username=${encodeURIComponent(
+          'user name'
+        )}&layout=compact`,
       expectedResult: { data: 'test' },
     },
   ])(
