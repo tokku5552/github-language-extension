@@ -31,10 +31,12 @@ const Popup = () => {
     const fetch = async (username: string) => {
       const themeType =
         colorMode === 'light' ? ThemeType.LIGHT : ThemeType.DARK;
-      const stats = await getGitHubStats(username, themeType);
-      const lang = await getGitHubTopLanguage(username, themeType);
-      setCurrentTopLanguage(lang.data);
+      const [stats, lang] = await Promise.all([
+        getGitHubStats(username, themeType),
+        getGitHubTopLanguage(username, themeType),
+      ]);
       setCurrentStats(stats.data);
+      setCurrentTopLanguage(lang.data);
     };
     console.log(username);
     if (username !== '') {
