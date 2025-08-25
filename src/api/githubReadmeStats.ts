@@ -29,7 +29,7 @@ export const getGitHubUsername = (url: string): string => {
       return urlObj.pathname.split('/')[1];
     }
   } catch {
-    //
+    // ignore invalid URLs
   }
 
   return '';
