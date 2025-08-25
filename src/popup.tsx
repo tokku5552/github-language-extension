@@ -43,7 +43,7 @@ const Popup = () => {
       console.log(username);
       fetch(username);
     }
-  }, [username, colorMode, currentStats, currentTopLanguage]);
+  }, [username, colorMode]);
 
   return (
     <>
