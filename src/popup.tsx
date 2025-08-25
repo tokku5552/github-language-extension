@@ -14,7 +14,6 @@ const Popup = () => {
   const { register, setValue, handleSubmit, formState } = useForm<FormData>();
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data['username']);
     setUsername(data['username']);
   });
 
@@ -36,9 +35,7 @@ const Popup = () => {
       setCurrentTopLanguage(lang.data);
       setCurrentStats(stats.data);
     };
-    console.log(username);
     if (username !== '') {
-      console.log(username);
       fetch(username);
     }
   }, [username, colorMode, currentStats, currentTopLanguage]);
