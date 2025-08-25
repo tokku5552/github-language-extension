@@ -10,6 +10,7 @@ export const Popup = () => {
   const [username, setUsername] = useState('');
   const [currentStats, setCurrentStats] = useState('');
   const [currentTopLanguage, setCurrentTopLanguage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { colorMode } = useColorMode();
   const { register, setValue, handleSubmit, formState } = useForm<FormData>();
 
@@ -29,12 +30,21 @@ export const Popup = () => {
 
   const fetchStats = useCallback(
     async (username: string) => {
-      const themeType =
-        colorMode === 'light' ? ThemeType.LIGHT : ThemeType.DARK;
-      const stats = await getGitHubStats(username, themeType);
-      const lang = await getGitHubTopLanguage(username, themeType);
-      setCurrentTopLanguage(lang.data);
-      setCurrentStats(stats.data);
+      setIsLoading(true);
+      try {
+        const themeType =
+          colorMode === 'light' ? ThemeType.LIGHT : ThemeType.DARK;
+        const stats = await getGitHubStats(username, themeType);
+        const lang = await getGitHubTopLanguage(username, themeType);
+        setCurrentTopLanguage(lang.data);
+        setCurrentStats(stats.data);
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+        setCurrentTopLanguage('');
+        setCurrentStats('');
+      } finally {
+        setIsLoading(false);
+      }
     },
     [colorMode]
   );
@@ -52,6 +62,7 @@ export const Popup = () => {
         <StatsBody
           currentStats={currentStats}
           currentTopLanguage={currentTopLanguage}
+          isLoading={isLoading}
         />
         <StatsForm
           onSubmit={onSubmit}
