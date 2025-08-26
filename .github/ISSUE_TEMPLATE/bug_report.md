@@ -1,8 +1,8 @@
 ---
-name: "\U0001F41B Bug report"
-about: Create a report to help us improve
-title: ''
-labels: ''
+name: "\U0001F41B Bug Report (Chrome Extension)"
+about: Create a report to help us improve the Chrome Extension
+title: "[BUG] "
+labels: "bug"
 assignees: ''
 
 ---
@@ -23,16 +23,17 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Environment (please complete the following information):**
+ - **Chrome Version**: `e.g., 108.0.5359.124`
+ - **Extension Version**: `e.g., 1.2.3`
+ - **Operating System**: `e.g., macOS 13.1 / Windows 11`
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Console Logs**
+Please open the developer console (Cmd+Opt+J or Ctrl+Shift+J), reproduce the bug, and paste any error messages or relevant logs here.
+
+```
+(Paste logs here)
+```
 
 **Additional context**
 Add any other context about the problem here.
