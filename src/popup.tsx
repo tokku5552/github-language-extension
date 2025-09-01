@@ -2,14 +2,15 @@ import { getGitHubStats, getGitHubTopLanguage, getGitHubUsername } from '@/api';
 import { Header, StatsBody, StatsForm } from '@/components';
 import { ThemeType } from '@/types/enums';
 import { Box, ChakraProvider, useColorMode } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useForm } from 'react-hook-form';
 
-const Popup = () => {
+export const Popup = () => {
   const [username, setUsername] = useState('');
   const [currentStats, setCurrentStats] = useState('');
   const [currentTopLanguage, setCurrentTopLanguage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { colorMode } = useColorMode();
   const { register, setValue, handleSubmit, formState } = useForm<FormData>();
 
@@ -26,6 +27,27 @@ const Popup = () => {
     });
   }, []);
 
+  const fetchStats = useCallback(
+    async (username: string) => {
+      setIsLoading(true);
+      try {
+        const themeType =
+          colorMode === 'light' ? ThemeType.LIGHT : ThemeType.DARK;
+        const stats = await getGitHubStats(username, themeType);
+        const lang = await getGitHubTopLanguage(username, themeType);
+        setCurrentTopLanguage(lang.data);
+        setCurrentStats(stats.data);
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+        setCurrentTopLanguage('');
+        setCurrentStats('');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [colorMode]
+  );
+
   useEffect(() => {
     const fetch = async (username: string) => {
       const themeType =
@@ -38,7 +60,7 @@ const Popup = () => {
     if (username !== '') {
       fetch(username);
     }
-  }, [username, colorMode, currentStats, currentTopLanguage]);
+  }, [username, fetchStats]);
 
   return (
     <>
@@ -47,6 +69,7 @@ const Popup = () => {
         <StatsBody
           currentStats={currentStats}
           currentTopLanguage={currentTopLanguage}
+          isLoading={isLoading}
         />
         <StatsForm
           onSubmit={onSubmit}
@@ -59,12 +82,13 @@ const Popup = () => {
 };
 
 const container = document.getElementById('root');
-if (!container) throw new Error('container not found');
-const root = createRoot(container);
-root.render(
-  <React.StrictMode>
-    <ChakraProvider>
-      <Popup />
-    </ChakraProvider>
-  </React.StrictMode>
-);
+if (container) {
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <ChakraProvider>
+        <Popup />
+      </ChakraProvider>
+    </React.StrictMode>
+  );
+}
