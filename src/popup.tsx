@@ -15,7 +15,6 @@ export const Popup = () => {
   const { register, setValue, handleSubmit, formState } = useForm<FormData>();
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data['username']);
     setUsername(data['username']);
   });
 
