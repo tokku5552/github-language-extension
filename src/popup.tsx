@@ -50,17 +50,6 @@ export const Popup = () => {
   );
 
   useEffect(() => {
-    const fetch = async (username: string) => {
-      const themeType =
-        colorMode === 'light' ? ThemeType.LIGHT : ThemeType.DARK;
-      const [stats, lang] = await Promise.all([
-        getGitHubStats(username, themeType),
-        getGitHubTopLanguage(username, themeType),
-      ]);
-      setCurrentStats(stats.data);
-      setCurrentTopLanguage(lang.data);
-    };
-    console.log(username);
     if (username !== '') {
       fetchStats(username);
     }
