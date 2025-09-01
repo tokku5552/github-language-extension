@@ -15,7 +15,6 @@ export const Popup = () => {
   const { register, setValue, handleSubmit, formState } = useForm<FormData>();
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data['username']);
     setUsername(data['username']);
   });
 
@@ -50,8 +49,16 @@ export const Popup = () => {
   );
 
   useEffect(() => {
+    const fetch = async (username: string) => {
+      const themeType =
+        colorMode === 'light' ? ThemeType.LIGHT : ThemeType.DARK;
+      const stats = await getGitHubStats(username, themeType);
+      const lang = await getGitHubTopLanguage(username, themeType);
+      setCurrentTopLanguage(lang.data);
+      setCurrentStats(stats.data);
+    };
     if (username !== '') {
-      fetchStats(username);
+      fetch(username);
     }
   }, [username, fetchStats]);
 
