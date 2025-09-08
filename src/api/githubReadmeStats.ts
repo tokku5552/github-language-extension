@@ -25,12 +25,11 @@ export const getGitHubTopLanguage = (
 export const getGitHubUsername = (url: string): string => {
   try {
     const urlObj = new URL(url);
-    console.log(urlObj.hostname);
     if (urlObj.hostname === 'github.com') {
       return urlObj.pathname.split('/')[1];
     }
   } catch {
-    //
+    // ignore invalid URLs
   }
 
   return '';
