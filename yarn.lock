@@ -1246,10 +1246,10 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
-"@types/chrome@0.1.24":
-  version "0.1.24"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.1.24.tgz#71c93111c40a057a8a45c4ab74eb7fe0aaf0048a"
-  integrity sha512-9iO9HL2bMeGS4C8m6gNFWUyuPE5HEUFk+rGh+7oriUjg+ata4Fc9PoVlu8xvGm7yoo3AmS3J6fAjoFj61NL2rw==
+"@types/chrome@0.1.27":
+  version "0.1.27"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.1.27.tgz#16409562ab7628ece917f7f602ae60b620db99cd"
+  integrity sha512-pkkCb0Ft8X+Igi751POzT+YqchSxUCtB6s4Gs6ttgSj8qzJga/qlJMgSW1mKxuQTW4i0sTqQbqVtzXDS5AU+4A==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
@@ -2065,9 +2065,9 @@ available-typed-arrays@^1.0.7:
     possible-typed-array-names "^1.0.0"
 
 axios@^1.2.1:
-  version "1.12.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.12.2.tgz#6c307390136cf7a2278d09cec63b136dfc6e6da7"
-  integrity sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.13.1.tgz#45b62dc8fe04e0e92274e08b98e910ba3d7963a7"
+  integrity sha512-hU4EGxxt+j7TQijx1oYdAjw4xuIp1wRQSsbMFwSthCWeBQur1eF+qJ5iQ5sN3Tw8YRzQNKb8jszgBdMDVqwJcw==
   dependencies:
     follow-redirects "^1.15.6"
     form-data "^4.0.4"
