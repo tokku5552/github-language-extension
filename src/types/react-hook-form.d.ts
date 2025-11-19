@@ -9,7 +9,7 @@ declare module 'react-hook-form' {
   ) => Record<string, unknown>;
 
   export interface FormState<TFieldValues = FieldValues> {
-    errors: Record<string, any>;
+    errors: Record<keyof TFieldValues | string, unknown>;
     isSubmitting?: boolean;
   }
 
@@ -26,5 +26,7 @@ declare module 'react-hook-form' {
     setValue: (name: keyof TFieldValues | `${string}`, value: unknown) => void;
   }
 
-  export function useForm<TFieldValues = FieldValues>(): UseFormReturn<TFieldValues>;
+  export function useForm<
+    TFieldValues = FieldValues
+  >(): UseFormReturn<TFieldValues>;
 }
