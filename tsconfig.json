@@ -12,8 +12,7 @@
     "typeRoots": ["node_modules/@types"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "react-hook-form": ["./src/types/react-hook-form"]
+      "@/*": ["./src/*"]
     }
   }
 }
