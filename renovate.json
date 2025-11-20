@@ -25,10 +25,7 @@
     },
     {
       "groupName": "react-hook-form",
-      "matchPackageNames": [
-        "react-hook-form",
-        "@hookform/resolvers"
-      ]
+      "matchPackageNames": ["react-hook-form", "@hookform/resolvers"]
     }
   ]
 }
