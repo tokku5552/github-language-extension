@@ -44,6 +44,9 @@ jobs:
         with:
           path: '**/node_modules'
           key: cache-node-modules-${{ hashFiles('yarn.lock') }}
+      - name: yarn install
+        run: |
+          yarn install
       - name: yarn lint
         run: yarn lint
   test:
@@ -61,6 +64,9 @@ jobs:
         with:
           path: '**/node_modules'
           key: cache-node-modules-${{ hashFiles('yarn.lock') }}
+      - name: yarn install
+        run: |
+          yarn install
       - name: yarn test
         run: yarn test
   build:
@@ -78,6 +84,9 @@ jobs:
         with:
           path: '**/node_modules'
           key: cache-node-modules-${{ hashFiles('yarn.lock') }}
+      - name: yarn install
+        run: |
+          yarn install
       - name: build
         run: yarn build
       - name: Update manifest.json
