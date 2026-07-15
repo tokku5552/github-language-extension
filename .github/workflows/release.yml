@@ -59,6 +59,9 @@ jobs:
           unzip extension.zip
           ls -lR ./dist
       - name: Submit
+        # Do not let a Chrome Web Store publish failure (e.g. a rejected
+        # auto-publish) block the GitHub Release creation below.
+        continue-on-error: true
         run: |
           npx chrome-webstore-upload-cli@2 upload --source extension.zip --auto-publish
         env:
