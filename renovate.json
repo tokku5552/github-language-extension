@@ -7,6 +7,12 @@
   "major": {
     "enabled": false
   },
+  "minor": {
+    "automerge": true
+  },
+  "patch": {
+    "automerge": true
+  },
   "packageRules": [
     {
       "groupName": "linters",
