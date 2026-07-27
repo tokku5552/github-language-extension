@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: yarn
       - name: Cache node modules
         id: cache
@@ -23,7 +23,7 @@ jobs:
           key: cache-node-modules-${{ hashFiles('yarn.lock') }}
       - name: yarn install
         run: |
-          yarn install
+          yarn install --ignore-scripts
   release:
     if: github.event.pull_request.merged == true
     needs: prepare
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
           cache: yarn
       - name: Cache node modules
         id: cache
@@ -42,7 +42,7 @@ jobs:
           key: cache-node-modules-${{ hashFiles('yarn.lock') }}
       - name: yarn install
         run: |
-          yarn install
+          yarn install --ignore-scripts
       - uses: fregante/daily-version-action@v2
         id: daily-version
       - name: build
