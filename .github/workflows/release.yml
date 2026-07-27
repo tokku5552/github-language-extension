@@ -10,40 +10,40 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 18
+          node-version: 20
           cache: yarn
       - name: Cache node modules
         id: cache
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: '**/node_modules'
           key: cache-node-modules-${{ hashFiles('yarn.lock') }}
       - name: yarn install
         run: |
-          yarn install
+          yarn install --ignore-scripts
   release:
     if: github.event.pull_request.merged == true
     needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 18
+          node-version: 20
           cache: yarn
       - name: Cache node modules
         id: cache
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: '**/node_modules'
           key: cache-node-modules-${{ hashFiles('yarn.lock') }}
       - name: yarn install
         run: |
-          yarn install
-      - uses: fregante/daily-version-action@v2
+          yarn install --ignore-scripts
+      - uses: fregante/daily-version-action@v3
         id: daily-version
       - name: build
         run: yarn build
@@ -67,7 +67,7 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
       - name: Create release draft
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.daily-version.outputs.version }}
           draft: false
