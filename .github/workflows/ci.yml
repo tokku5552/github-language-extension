@@ -10,7 +10,7 @@ on:
       - 'yarn.lock'
       - 'package.json'
       - 'tsconfig.json'
-      - '.github/workflows/on_pull_request.yml'
+      - '.github/workflows/ci.yml'
 jobs:
   prepare:
     runs-on: ubuntu-latest
