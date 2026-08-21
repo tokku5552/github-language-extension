@@ -1246,10 +1246,10 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
-"@types/chrome@0.2.5":
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.2.5.tgz#adb843504f9a8e737fb48c0e82e78ffeb3616a0f"
-  integrity sha512-DwLFgwj3D0zjxRBhQ3610RBso2g+yI1cakq/JdIGopZ9Bc5UhQluyfcLGZwivFE4t2h4b2QZYZhPV7KylExSbA==
+"@types/chrome@0.2.6":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@types/chrome/-/chrome-0.2.6.tgz#0c5958220a74edffb43331f21703a7a45b2a394e"
+  integrity sha512-8OgXtL+OcR2IpY2ul5itg0R3xmdceAM4ldcHxh4BFL20p5z7fjhpyP5KuXAp1LIxA7oQgyViKTS9d+W8Sn8jdQ==
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
