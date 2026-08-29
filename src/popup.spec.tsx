@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { ChakraProvider } from '@chakra-ui/react';
 import { Popup } from '@/popup';
 import { getGitHubStats, getGitHubTopLanguage, getGitHubUsername } from '@/api';
 
@@ -24,11 +23,7 @@ describe('Popup', () => {
   });
 
   it('fetches stats only once', async () => {
-    render(
-      <ChakraProvider>
-        <Popup />
-      </ChakraProvider>
-    );
+    render(<Popup />);
     await waitFor(() => {
       expect(getGitHubStats).toHaveBeenCalledTimes(1);
     });

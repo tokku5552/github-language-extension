@@ -1,39 +1,75 @@
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, Heading, useColorMode } from '@chakra-ui/react';
+import { MoonIcon, SunIcon } from '@/components/icons';
+import { useColorMode } from '@/theme';
 import React from 'react';
 
 export default function Header() {
   const { colorMode, toggleColorMode } = useColorMode();
+
   return (
-    <>
-      <Box
-        bg="#4299E1"
-        w="100%"
-        h={20}
-        p={4}
-        color="white"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
+    <div
+      style={{
+        backgroundColor: '#4299E1',
+        width: '100%',
+        height: '80px',
+        padding: '16px',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        style={{
+          height: '64px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '100%',
+        }}
       >
-        <Flex
-          h={16}
-          alignItems={'center'}
-          justifyContent={'space-between'}
-          w="100%"
-        >
-          <Box>
-            <Heading as="h3" size="xl" isTruncated>
-              GitHub Language Stats
-            </Heading>
-          </Box>
-          <Box>
-            <Button onClick={toggleColorMode}>
-              {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-            </Button>
-          </Box>
-        </Flex>
-      </Box>
-    </>
+        <div>
+          <h1
+            style={{
+              fontSize: '1.875rem',
+              fontWeight: 700,
+              lineHeight: 1.2,
+              margin: 0,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            GitHub Language Stats
+          </h1>
+        </div>
+        <div>
+          <button
+            type="button"
+            onClick={toggleColorMode}
+            aria-label="Toggle color mode"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minWidth: '40px',
+              height: '40px',
+              padding: '0 12px',
+              border: 'none',
+              borderRadius: '6px',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              cursor: 'pointer',
+              fontSize: '18px',
+            }}
+          >
+            {colorMode === 'light' ? (
+              <MoonIcon size="1.2em" />
+            ) : (
+              <SunIcon size="1.2em" />
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

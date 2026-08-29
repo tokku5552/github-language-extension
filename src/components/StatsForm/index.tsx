@@ -1,11 +1,3 @@
-import {
-  Box,
-  Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-} from '@chakra-ui/react';
 import React from 'react';
 import { FormState, UseFormRegister } from 'react-hook-form';
 
@@ -21,31 +13,83 @@ export default function StatsForm({
   formState,
 }: StatsFormProps) {
   const { errors } = formState;
+  const isInvalid = !!errors.username;
+  const isLoading = formState.isSubmitting;
+
   return (
-    <>
-      <Box pb={2} pl={4} pr={4}>
-        <form onSubmit={onSubmit}>
-          <FormControl id="username" isInvalid={!!errors.username} isRequired>
-            <FormLabel>GitHub username</FormLabel>
-            <Input
-              placeholder="GitHub username"
-              {...register('username', { required: true })}
-            />
-            <FormErrorMessage>
-              {errors.username && 'GitHub username is required'}
-            </FormErrorMessage>
-          </FormControl>
-          <Button
-            mt={2}
-            bg="#4299E1"
-            color="white"
-            isLoading={formState.isSubmitting}
-            type="submit"
+    <div
+      style={{
+        paddingBottom: '8px',
+        paddingLeft: '16px',
+        paddingRight: '16px',
+      }}
+    >
+      <form onSubmit={onSubmit}>
+        <div>
+          <label
+            htmlFor="username"
+            style={{
+              display: 'block',
+              marginBottom: '8px',
+              fontWeight: 500,
+            }}
           >
-            Submit
-          </Button>
-        </form>
-      </Box>
-    </>
+            GitHub username
+            <span
+              style={{ color: '#E53E3E', marginLeft: '4px' }}
+              aria-hidden="true"
+            >
+              *
+            </span>
+          </label>
+          <input
+            id="username"
+            placeholder="GitHub username"
+            aria-required="true"
+            aria-invalid={isInvalid}
+            style={{
+              width: '100%',
+              height: '40px',
+              padding: '0 16px',
+              border: `1px solid ${isInvalid ? '#E53E3E' : '#E2E8F0'}`,
+              borderRadius: '6px',
+              outline: 'none',
+              boxSizing: 'border-box',
+              fontSize: '16px',
+            }}
+            {...register('username', { required: true })}
+          />
+          {isInvalid && (
+            <div
+              style={{
+                color: '#E53E3E',
+                marginTop: '8px',
+                fontSize: '14px',
+              }}
+            >
+              GitHub username is required
+            </div>
+          )}
+        </div>
+        <button
+          type="submit"
+          disabled={isLoading}
+          style={{
+            marginTop: '8px',
+            height: '40px',
+            padding: '0 16px',
+            backgroundColor: '#4299E1',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            fontWeight: 600,
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            opacity: isLoading ? 0.7 : 1,
+          }}
+        >
+          {isLoading ? 'Loading...' : 'Submit'}
+        </button>
+      </form>
+    </div>
   );
 }
