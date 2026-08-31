@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
+          token: ${{ secrets.AUTOMATION_PAT }}
 
       - name: Set current datetime as env variable
         env:
@@ -25,15 +26,9 @@ jobs:
       - name: Push Branch
         run: git push origin merge/gha_${{ env.CURRENT_DATETIME }}
 
-      - name: Install Hub
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y hub
-
       - name: Create Pull Request
         env:
-          REVIEWERS: 'tokku5552'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_PAT }}
           BRANCH_NAME: merge/gha_${{ env.CURRENT_DATETIME }}
         run: |
-          hub pull-request -m "[bot(create_pr_main_to_develop)]: created at ${{ env.CURRENT_DATETIME }}" -b develop -h $BRANCH_NAME  -r "$REVIEWERS"
+          gh pr create --title "[bot(create_pr_main_to_develop)]: created at ${{ env.CURRENT_DATETIME }}" --body "[bot(create_pr_main_to_develop)]: created at ${{ env.CURRENT_DATETIME }}" --base develop --head $BRANCH_NAME
