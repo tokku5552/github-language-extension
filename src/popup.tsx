@@ -1,4 +1,5 @@
 import { fetchStats, getGitHubUsername } from '@/api';
+import { GITHUB_OAUTH_CLIENT_ID } from '@/config';
 import { Header, StatsBody, StatsForm } from '@/components';
 import { getCachedStats, getToken, setCachedStats } from '@/storage';
 import { StatsErrorType, StatsSource } from '@/types/enums';
@@ -94,9 +95,11 @@ export const Popup = () => {
       {!hasToken && (
         <Text fontSize="xs" pb={3} pl={4} pr={4}>
           <Link color="#4299E1" onClick={openOptions}>
-            Add a personal access token
+            {GITHUB_OAUTH_CLIENT_ID === ''
+              ? 'Add a personal access token'
+              : 'Sign in with GitHub'}
           </Link>{' '}
-          to include commits, PRs, issues, rank and private contributions.
+          to include commits, PRs, issues and rank.
         </Text>
       )}
     </Box>

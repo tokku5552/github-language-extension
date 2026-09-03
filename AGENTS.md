@@ -85,7 +85,7 @@ yarn lint
 - **主要な設定ファイル**: `public/manifest.json` が、拡張機能の権限（permissions）、動作（action）、アイコンなどを定義する中心的なファイルです。変更を加える際は、このファイルの理解が不可欠です。
 - **UIはポップアップ**: この拡張機能のユーザーインターフェースは、ツールバーアイコンをクリックした際に表示されるポップアップ (`popup.html`) 内に実装されています。
 - **バックグラウンド/コンテントスクリプトの不在**: `manifest.json` には `background` や `content_scripts` の定義がありません。これは、拡張機能のロジックが主にポップアップ内で完結しており、ウェブページに直接スクリプトを注入したり、バックグラウンドで永続的に動作したりはしないことを意味します。
-- **外部APIとの通信**: `host_permissions` に `https://api.github.com/*` が指定されている通り、この拡張機能は GitHub API と直接通信して統計情報を取得します。
+- **外部APIとの通信**: `host_permissions` に `https://api.github.com/*` と `https://github.com/login/*` が指定されている通り、この拡張機能は GitHub API および OAuth のデバイスフローと直接通信します。MV3 では拡張機能ページと Service Worker のみが host_permissions によって CORS を回避できます（content script は不可）。
 
 ## 9. 統計データの取得方針
 
@@ -97,5 +97,8 @@ yarn lint
 いずれの経路も `src/types/stats.ts` の `Stats` に正規化して返すため、コンポーネント側はどちらの API が使われたかを意識しません。トークンでのみ取得できるフィールドは省略可能（optional）であり、`undefined` は「0」ではなく「トークンがないため取得不可」を意味します。
 
 - **レート制限対策**: 取得結果は `src/storage/` 経由で `chrome.storage.local` に一定時間キャッシュされます。キャッシュキーには取得経路が含まれるため、未認証の結果が認証済みの結果を上書きすることはありません。
-- **トークンの取り扱い**: トークンは `chrome.storage.local` にのみ保存し、api.github.com 以外へ送信してはいけません。ログにも出力しないでください。
+- **トークンの取得経路**: 設定画面は OAuth Device Flow（`src/api/deviceFlow.ts`）とトークン手入力の2つを提供します。Device Flow はクライアントシークレットを必要とせず、`src/config.ts` の `GITHUB_OAUTH_CLIENT_ID` が空の間はボタン自体が表示されません。取得経路は `src/storage/` に保存するだけで、`src/api/github.ts` はどちらで得たトークンかを区別しません。
+- **scope はゼロが既定です**。公開データの取得に scope は不要で、同意画面を軽く保つことが Device Flow を採用した理由そのものです。private 対応が必要になるまで `GITHUB_OAUTH_SCOPE` を空のままにしてください。
+- **`options_ui.open_in_tab` は `true` である必要があります**。Device Flow は認証のため別タブを開くので、モーダルの設定ダイアログだとその遷移で閉じられ、ポーリングが中断します。
+- **トークンの取り扱い**: トークンは `chrome.storage.local` にのみ保存し、api.github.com / github.com の OAuth エンドポイント以外へ送信してはいけません。ログにも出力しないでください。
 - **失敗時の表示**: 取得に失敗した場合は必ず `ErrorState` で理由を表示します。空表示にフォールバックしないでください。

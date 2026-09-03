@@ -27,6 +27,10 @@ export const StatsErrorType = {
   RATE_LIMITED: 'rate_limited',
   UNAUTHORIZED: 'unauthorized',
   NETWORK: 'network',
+  /** The device flow code expired before the user approved it. */
+  DEVICE_EXPIRED: 'device_expired',
+  /** The user declined the device flow authorization. */
+  DEVICE_DENIED: 'device_denied',
 } as const;
 
 export type StatsErrorType =

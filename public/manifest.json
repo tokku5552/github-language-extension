@@ -9,8 +9,8 @@
   },
   "options_ui": {
     "page": "options.html",
-    "open_in_tab": false
+    "open_in_tab": true
   },
   "permissions": ["activeTab", "storage"],
-  "host_permissions": ["https://api.github.com/*"]
+  "host_permissions": ["https://api.github.com/*", "https://github.com/login/*"]
 }
