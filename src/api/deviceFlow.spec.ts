@@ -171,6 +171,50 @@ describe('pollForAccessToken', () => {
     expect(axiosMock.post).not.toHaveBeenCalled();
   });
 
+  test('stops immediately when the caller aborts during the wait', async () => {
+    const controller = new AbortController();
+    axiosMock.post.mockResolvedValue({
+      status: 200,
+      data: { error: 'authorization_pending' },
+    });
+
+    // A 30 second interval would hang the test if the wait were not abortable.
+    const promise = pollForAccessToken(
+      'client-id',
+      { ...code, interval: 30 },
+      { signal: controller.signal }
+    );
+    controller.abort();
+
+    await expect(promise).rejects.toMatchObject({
+      type: StatsErrorType.NETWORK,
+      message: 'Sign-in cancelled.',
+    });
+    expect(axiosMock.post).not.toHaveBeenCalled();
+  });
+
+  test('does not accept a token that arrives after the cancel', async () => {
+    const controller = new AbortController();
+    let answer: (value: unknown) => void = () => undefined;
+    axiosMock.post.mockReturnValue(
+      new Promise((resolve) => {
+        answer = resolve;
+      })
+    );
+
+    const promise = pollForAccessToken('client-id', code, {
+      signal: controller.signal,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 5));
+
+    controller.abort();
+    answer({ status: 200, data: { access_token: 'gho_token' } });
+
+    await expect(promise).rejects.toMatchObject({
+      message: 'Sign-in cancelled.',
+    });
+  });
+
   test('surfaces an unexpected error verbatim', async () => {
     axiosMock.post.mockResolvedValueOnce({
       status: 200,

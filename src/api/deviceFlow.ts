@@ -95,9 +95,24 @@ export const requestDeviceCode = async (
   };
 };
 
-const wait = (seconds: number): Promise<void> =>
-  new Promise((resolve) => {
-    setTimeout(resolve, seconds * 1000);
+const cancelledError = (): StatsError => networkError('Sign-in cancelled.');
+
+/** Sleeps, but gives up as soon as the caller aborts. */
+const wait = (seconds: number, signal?: AbortSignal): Promise<void> =>
+  new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(cancelledError());
+      return;
+    }
+    const onAbort = () => {
+      clearTimeout(timer);
+      reject(cancelledError());
+    };
+    const timer = setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort);
+      resolve();
+    }, seconds * 1000);
+    signal?.addEventListener('abort', onAbort, { once: true });
   });
 
 export interface PollOptions {
@@ -119,7 +134,7 @@ export const pollForAccessToken = async (
 
   for (;;) {
     if (signal?.aborted) {
-      throw networkError('Sign-in cancelled.');
+      throw cancelledError();
     }
     if (Date.now() >= deadline) {
       throw new StatsError(
@@ -128,10 +143,7 @@ export const pollForAccessToken = async (
       );
     }
 
-    await wait(interval);
-    if (signal?.aborted) {
-      throw networkError('Sign-in cancelled.');
-    }
+    await wait(interval, signal);
 
     let status: number;
     let body: TokenResponse;
@@ -143,12 +155,21 @@ export const pollForAccessToken = async (
           device_code: code.deviceCode,
           grant_type: GRANT_TYPE,
         },
-        { headers: JSON_HEADERS, ...ACCEPT_ANY_STATUS }
+        { headers: JSON_HEADERS, ...ACCEPT_ANY_STATUS, signal }
       );
       status = response.status;
       body = response.data ?? {};
     } catch {
+      if (signal?.aborted) {
+        throw cancelledError();
+      }
       throw networkError('Could not reach GitHub while waiting for approval.');
+    }
+
+    // A response that arrives in the same tick as the cancel must not be
+    // allowed to store a token the user just backed out of.
+    if (signal?.aborted) {
+      throw cancelledError();
     }
 
     if (status >= 500) {
