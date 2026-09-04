@@ -187,6 +187,19 @@ describe('Popup', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('offers the options page on a tab with no username to look up', async () => {
+    (getGitHubUsername as jest.Mock).mockReturnValue('');
+
+    renderPopup();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Add a personal access token')
+      ).toBeInTheDocument();
+    });
+    expect(fetchStatsMock).not.toHaveBeenCalled();
+  });
+
   it('hides the token prompt once a token is saved', async () => {
     getTokenMock.mockResolvedValue('ghp_secret');
 

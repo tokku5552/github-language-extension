@@ -14,7 +14,9 @@ export const Popup = () => {
   const [stats, setStats] = useState<Stats>();
   const [error, setError] = useState<StatsError>();
   const [isLoading, setIsLoading] = useState(false);
-  const [hasToken, setHasToken] = useState(true);
+  // Undefined until the stored token has been read, so the prompt does not
+  // flash on every popup open.
+  const [hasToken, setHasToken] = useState<boolean>();
   const { register, setValue, handleSubmit, formState } = useForm<FormData>();
   /**
    * Name of the newest lookup. It serves two purposes: a repeated effect run
@@ -36,6 +38,9 @@ export const Popup = () => {
       setUsername(name);
       setValue('username', name);
     });
+    // Read here rather than only inside a lookup: on a non-GitHub tab there is
+    // no username to look up, and the prompt would never appear.
+    getToken().then((token) => setHasToken(!!token));
   }, []);
 
   const loadStats = useCallback(async (name: string) => {
@@ -51,7 +56,6 @@ export const Popup = () => {
       if (!isCurrent()) {
         return;
       }
-      setHasToken(!!token);
       const source = token ? StatsSource.GRAPHQL : StatsSource.REST;
 
       const cached = await getCachedStats(name, source);
@@ -108,7 +112,7 @@ export const Popup = () => {
         register={register}
         formState={formState}
       />
-      {!hasToken && (
+      {hasToken === false && (
         <Text fontSize="xs" pb={3} pl={4} pr={4}>
           <Link color="#4299E1" onClick={openOptions}>
             {GITHUB_OAUTH_CLIENT_ID === ''
