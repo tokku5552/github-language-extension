@@ -46,7 +46,5 @@ export class StatsError extends Error {
     this.name = 'StatsError';
     this.type = type;
     this.resetAt = resetAt;
-    // Required so `instanceof` works after TypeScript downlevels to ES5/ES6.
-    Object.setPrototypeOf(this, StatsError.prototype);
   }
 }
