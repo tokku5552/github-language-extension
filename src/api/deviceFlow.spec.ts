@@ -116,20 +116,91 @@ describe('pollForAccessToken', () => {
     expect(axiosMock.post).toHaveBeenCalledTimes(3);
   });
 
-  test('backs off when GitHub asks it to slow down', async () => {
-    axiosMock.post
-      .mockResolvedValueOnce({
-        status: 200,
-        data: { error: 'slow_down', interval: 0 },
-      })
-      .mockResolvedValueOnce({
+  describe('interval handling', () => {
+    // Real timers would make these tests as slow as the intervals they check.
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+
+    test('waits the interval GitHub asked for before the first poll', async () => {
+      axiosMock.post.mockResolvedValue({
         status: 200,
         data: { access_token: 'gho_token' },
       });
 
-    await expect(pollForAccessToken('client-id', code)).resolves.toBe(
-      'gho_token'
-    );
+      const promise = pollForAccessToken('client-id', { ...code, interval: 7 });
+
+      await jest.advanceTimersByTimeAsync(6999);
+      expect(axiosMock.post).not.toHaveBeenCalled();
+
+      await jest.advanceTimersByTimeAsync(2);
+      expect(axiosMock.post).toHaveBeenCalledTimes(1);
+      await expect(promise).resolves.toBe('gho_token');
+    });
+
+    test('adds five seconds when slow_down names no new interval', async () => {
+      axiosMock.post
+        .mockResolvedValueOnce({ status: 200, data: { error: 'slow_down' } })
+        .mockResolvedValueOnce({
+          status: 200,
+          data: { access_token: 'gho_token' },
+        });
+
+      const promise = pollForAccessToken('client-id', { ...code, interval: 5 });
+
+      await jest.advanceTimersByTimeAsync(5000);
+      expect(axiosMock.post).toHaveBeenCalledTimes(1);
+
+      // 5 + 5, so nothing happens at the old cadence.
+      await jest.advanceTimersByTimeAsync(5000);
+      expect(axiosMock.post).toHaveBeenCalledTimes(1);
+
+      await jest.advanceTimersByTimeAsync(5000);
+      expect(axiosMock.post).toHaveBeenCalledTimes(2);
+      await expect(promise).resolves.toBe('gho_token');
+    });
+
+    test('honours an interval slow_down restates', async () => {
+      axiosMock.post
+        .mockResolvedValueOnce({
+          status: 200,
+          data: { error: 'slow_down', interval: 20 },
+        })
+        .mockResolvedValueOnce({
+          status: 200,
+          data: { access_token: 'gho_token' },
+        });
+
+      const promise = pollForAccessToken('client-id', { ...code, interval: 5 });
+
+      await jest.advanceTimersByTimeAsync(5000);
+      expect(axiosMock.post).toHaveBeenCalledTimes(1);
+
+      await jest.advanceTimersByTimeAsync(19999);
+      expect(axiosMock.post).toHaveBeenCalledTimes(1);
+
+      await jest.advanceTimersByTimeAsync(2);
+      expect(axiosMock.post).toHaveBeenCalledTimes(2);
+      await expect(promise).resolves.toBe('gho_token');
+    });
+
+    test('stops once the code lifetime elapses mid-poll', async () => {
+      axiosMock.post.mockResolvedValue({
+        status: 200,
+        data: { error: 'authorization_pending' },
+      });
+
+      const settled = pollForAccessToken('client-id', {
+        ...code,
+        interval: 5,
+        expiresIn: 12,
+      }).catch((caught) => caught);
+
+      await jest.advanceTimersByTimeAsync(20000);
+
+      expect(await settled).toMatchObject({
+        type: StatsErrorType.DEVICE_EXPIRED,
+      });
+    });
   });
 
   test('stops when the user declines', async () => {

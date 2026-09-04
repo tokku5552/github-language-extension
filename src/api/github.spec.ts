@@ -74,6 +74,44 @@ describe('fetchStatsWithRest', () => {
     expect(stats.rank).toBeUndefined();
   });
 
+  test('follows pagination when a page comes back full', async () => {
+    const fullPage = Array.from({ length: 100 }, () => ({
+      fork: false,
+      language: 'Go',
+      stargazers_count: 1,
+    }));
+    axiosMock.get
+      .mockResolvedValueOnce({ data: user })
+      .mockResolvedValueOnce({ data: fullPage })
+      .mockResolvedValueOnce({ data: repos });
+
+    const stats = await fetchStatsWithRest('test_user');
+
+    expect(axiosMock.get).toHaveBeenCalledTimes(3);
+    expect(axiosMock.get).toHaveBeenLastCalledWith(
+      'https://api.github.com/users/test_user/repos',
+      expect.objectContaining({
+        params: { per_page: 100, type: 'owner', page: 2 },
+      })
+    );
+    expect(stats.stars).toBe(118);
+  });
+
+  test('caps pagination so one lookup cannot drain the hourly budget', async () => {
+    const fullPage = Array.from({ length: 100 }, () => ({
+      fork: false,
+      language: 'Go',
+      stargazers_count: 1,
+    }));
+    axiosMock.get.mockResolvedValue({ data: fullPage });
+    axiosMock.get.mockResolvedValueOnce({ data: user });
+
+    await fetchStatsWithRest('test_user');
+
+    // One user request plus MAX_REST_REPO_PAGES repository pages.
+    expect(axiosMock.get).toHaveBeenCalledTimes(4);
+  });
+
   test('stops paginating on a short page', async () => {
     axiosMock.get
       .mockResolvedValueOnce({ data: user })
@@ -233,6 +271,47 @@ describe('fetchStatsWithGraphQl', () => {
 
     expect(axiosMock.post).toHaveBeenCalledTimes(2);
     expect(stats.stars).toBe(30);
+  });
+
+  test('asks for the next page with the cursor GitHub returned', async () => {
+    const firstPage = {
+      ...graphQlUser,
+      repositories: {
+        ...graphQlUser.repositories,
+        pageInfo: { hasNextPage: true, endCursor: 'cursor-1' },
+      },
+    };
+    axiosMock.post
+      .mockResolvedValueOnce({ data: { data: { user: firstPage } } })
+      .mockResolvedValueOnce({ data: { data: { user: graphQlUser } } });
+
+    await fetchStatsWithGraphQl('test_user', 'token');
+
+    expect(axiosMock.post).toHaveBeenLastCalledWith(
+      'https://api.github.com/graphql',
+      expect.objectContaining({
+        variables: { login: 'test_user', after: 'cursor-1' },
+      }),
+      expect.anything()
+    );
+  });
+
+  test('maps a RATE_LIMITED GraphQL error', async () => {
+    axiosMock.post.mockResolvedValueOnce({
+      data: { errors: [{ type: 'RATE_LIMITED', message: 'API rate limit' }] },
+    });
+
+    await expect(
+      fetchStatsWithGraphQl('test_user', 'token')
+    ).rejects.toMatchObject({ type: StatsErrorType.RATE_LIMITED });
+  });
+
+  test('treats a null user as a missing user', async () => {
+    axiosMock.post.mockResolvedValueOnce({ data: { data: { user: null } } });
+
+    await expect(fetchStatsWithGraphQl('nope', 'token')).rejects.toMatchObject({
+      type: StatsErrorType.NOT_FOUND,
+    });
   });
 
   test('maps a NOT_FOUND GraphQL error', async () => {

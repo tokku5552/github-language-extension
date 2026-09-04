@@ -114,6 +114,9 @@ describe('Options', () => {
       await waitFor(() => {
         expect(screen.getByText('Connected as test_user.')).toBeInTheDocument();
       });
+      // The token that reaches storage is the one the poll produced, and it is
+      // verified before being written.
+      expect(validateTokenMock).toHaveBeenCalledWith('gho_token');
       expect(setToken).toHaveBeenCalledWith('gho_token');
     });
 
