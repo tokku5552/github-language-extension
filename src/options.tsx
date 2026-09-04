@@ -60,8 +60,15 @@ export const Options = () => {
   }, []);
 
   /** Stores a token that is already known to be valid. */
-  const persist = async (accessToken: string, login: string) => {
+  const persist = async (
+    accessToken: string,
+    login: string,
+    isCurrent: () => boolean
+  ) => {
     await setToken(accessToken);
+    if (!isCurrent()) {
+      return;
+    }
     setTokenValue(accessToken);
     setStatus({ kind: 'saved', login });
   };
@@ -109,7 +116,7 @@ export const Options = () => {
       if (!isCurrent()) {
         return;
       }
-      await persist(accessToken, login);
+      await persist(accessToken, login, isCurrent);
     } catch (caught) {
       if (!isCurrent()) {
         return;
@@ -129,6 +136,8 @@ export const Options = () => {
   const onSave = async () => {
     const trimmed = token.trim();
     if (!trimmed) {
+      // Reaching for the token field is taken as abandoning a sign-in that is
+      // still waiting for approval, so any pending attempt ends here too.
       endAttempt();
       setStatus({ kind: 'error', message: 'Enter a token first.' });
       return;
@@ -140,7 +149,7 @@ export const Options = () => {
       if (!isCurrent()) {
         return;
       }
-      await persist(trimmed, login);
+      await persist(trimmed, login, isCurrent);
     } catch (caught) {
       if (!isCurrent()) {
         return;
