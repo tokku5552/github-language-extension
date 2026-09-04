@@ -19,11 +19,9 @@ export const Popup = () => {
   const [hasToken, setHasToken] = useState<boolean>();
   const { register, setValue, handleSubmit, formState } = useForm<FormData>();
   /**
-   * Name of the newest lookup. It serves two purposes: a repeated effect run
-   * for the same name is skipped rather than spending a second request from
-   * the 60/hour anonymous budget, and every state write is checked against it
-   * so a slow response for a name the user has already moved on from is
-   * discarded instead of overwriting the newer one.
+   * Name of the newest lookup. Every state write is checked against it, so a
+   * slow response for a name the user has already moved on from is discarded
+   * instead of overwriting the newer one.
    */
   const latestRequest = useRef('');
 
@@ -44,9 +42,6 @@ export const Popup = () => {
   }, []);
 
   const loadStats = useCallback(async (name: string) => {
-    if (latestRequest.current === name) {
-      return;
-    }
     latestRequest.current = name;
     const isCurrent = () => latestRequest.current === name;
     setIsLoading(true);
