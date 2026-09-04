@@ -49,9 +49,11 @@ const networkError = (message: string): StatsError =>
   new StatsError(StatsErrorType.NETWORK, message);
 
 /**
- * These endpoints answer a rejected request with a 4xx and a JSON body naming
- * the reason, so the status is accepted and the body inspected instead of
- * letting axios reject and lose it.
+ * A request these endpoints refuse outright - an unknown client ID, say - comes
+ * back as a 4xx carrying a JSON body, which axios would otherwise turn into a
+ * rejection that loses the body. Accepting any status keeps it readable. Note
+ * that the ordinary polling outcomes (authorization_pending, slow_down,
+ * expired_token, access_denied) are not refusals: they arrive with HTTP 200.
  */
 const ACCEPT_ANY_STATUS = { validateStatus: () => true };
 
