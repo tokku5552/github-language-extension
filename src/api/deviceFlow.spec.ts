@@ -24,6 +24,7 @@ describe('requestDeviceCode', () => {
 
   test('asks GitHub for a code pair and normalizes it', async () => {
     axiosMock.post.mockResolvedValueOnce({
+      status: 200,
       data: {
         device_code: 'device-code',
         user_code: 'ABCD-1234',
@@ -40,18 +41,43 @@ describe('requestDeviceCode', () => {
     expect(axiosMock.post).toHaveBeenCalledWith(
       'https://github.com/login/device/code',
       { client_id: 'client-id', scope: '' },
-      { headers: expect.objectContaining({ Accept: 'application/json' }) }
+      expect.objectContaining({
+        headers: expect.objectContaining({ Accept: 'application/json' }),
+        validateStatus: expect.any(Function),
+      })
     );
   });
 
-  test('reports a rejected OAuth app', async () => {
+  test('explains an unknown client id, which GitHub answers with a 404', async () => {
+    // Verified against the live endpoint: an unregistered client ID returns
+    // HTTP 404 with {"error":"Not Found"} and no description.
     axiosMock.post.mockResolvedValueOnce({
-      data: { error: 'Not Found', error_description: 'No such app.' },
+      status: 404,
+      data: { error: 'Not Found' },
     });
 
     await expect(requestDeviceCode('client-id')).rejects.toMatchObject({
       type: StatsErrorType.NETWORK,
+      message: expect.stringContaining('device flow enabled'),
+    });
+  });
+
+  test('prefers the description GitHub supplies', async () => {
+    axiosMock.post.mockResolvedValueOnce({
+      status: 400,
+      data: { error: 'invalid_request', error_description: 'No such app.' },
+    });
+
+    await expect(requestDeviceCode('client-id')).rejects.toMatchObject({
       message: 'No such app.',
+    });
+  });
+
+  test('does not blame the OAuth app for a GitHub outage', async () => {
+    axiosMock.post.mockResolvedValueOnce({ status: 502, data: '<html>' });
+
+    await expect(requestDeviceCode('client-id')).rejects.toMatchObject({
+      message: expect.stringContaining('not answering'),
     });
   });
 
@@ -71,9 +97,18 @@ describe('pollForAccessToken', () => {
 
   test('keeps polling while authorization is pending', async () => {
     axiosMock.post
-      .mockResolvedValueOnce({ data: { error: 'authorization_pending' } })
-      .mockResolvedValueOnce({ data: { error: 'authorization_pending' } })
-      .mockResolvedValueOnce({ data: { access_token: 'gho_token' } });
+      .mockResolvedValueOnce({
+        status: 200,
+        data: { error: 'authorization_pending' },
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        data: { error: 'authorization_pending' },
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        data: { access_token: 'gho_token' },
+      });
 
     await expect(pollForAccessToken('client-id', code)).resolves.toBe(
       'gho_token'
@@ -83,8 +118,14 @@ describe('pollForAccessToken', () => {
 
   test('backs off when GitHub asks it to slow down', async () => {
     axiosMock.post
-      .mockResolvedValueOnce({ data: { error: 'slow_down', interval: 0 } })
-      .mockResolvedValueOnce({ data: { access_token: 'gho_token' } });
+      .mockResolvedValueOnce({
+        status: 200,
+        data: { error: 'slow_down', interval: 0 },
+      })
+      .mockResolvedValueOnce({
+        status: 200,
+        data: { access_token: 'gho_token' },
+      });
 
     await expect(pollForAccessToken('client-id', code)).resolves.toBe(
       'gho_token'
@@ -92,7 +133,10 @@ describe('pollForAccessToken', () => {
   });
 
   test('stops when the user declines', async () => {
-    axiosMock.post.mockResolvedValueOnce({ data: { error: 'access_denied' } });
+    axiosMock.post.mockResolvedValueOnce({
+      status: 200,
+      data: { error: 'access_denied' },
+    });
 
     await expect(pollForAccessToken('client-id', code)).rejects.toMatchObject({
       type: StatsErrorType.DEVICE_DENIED,
@@ -100,7 +144,10 @@ describe('pollForAccessToken', () => {
   });
 
   test('stops when the code expires', async () => {
-    axiosMock.post.mockResolvedValueOnce({ data: { error: 'expired_token' } });
+    axiosMock.post.mockResolvedValueOnce({
+      status: 200,
+      data: { error: 'expired_token' },
+    });
 
     await expect(pollForAccessToken('client-id', code)).rejects.toMatchObject({
       type: StatsErrorType.DEVICE_EXPIRED,
@@ -126,6 +173,7 @@ describe('pollForAccessToken', () => {
 
   test('surfaces an unexpected error verbatim', async () => {
     axiosMock.post.mockResolvedValueOnce({
+      status: 200,
       data: { error: 'unsupported_grant_type', error_description: 'Nope.' },
     });
 

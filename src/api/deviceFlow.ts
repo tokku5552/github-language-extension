@@ -48,23 +48,38 @@ interface TokenResponse {
 const networkError = (message: string): StatsError =>
   new StatsError(StatsErrorType.NETWORK, message);
 
+/**
+ * These endpoints answer a rejected request with a 4xx and a JSON body naming
+ * the reason, so the status is accepted and the body inspected instead of
+ * letting axios reject and lose it.
+ */
+const ACCEPT_ANY_STATUS = { validateStatus: () => true };
+
 /** Starts the device flow and returns the code pair to show the user. */
 export const requestDeviceCode = async (
   clientId: string
 ): Promise<DeviceCode> => {
+  let status: number;
   let body: DeviceCodeResponse;
   try {
     const response = await axios.post<DeviceCodeResponse>(
       DEVICE_CODE_ENDPOINT,
       { client_id: clientId, scope: GITHUB_OAUTH_SCOPE },
-      { headers: JSON_HEADERS }
+      { headers: JSON_HEADERS, ...ACCEPT_ANY_STATUS }
     );
-    body = response.data;
+    status = response.status;
+    body = response.data ?? {};
   } catch {
     throw networkError('Could not reach GitHub to start sign-in.');
   }
 
+  if (status >= 500) {
+    throw networkError('GitHub is not answering sign-in requests right now.');
+  }
+
   if (!body.device_code || !body.user_code || !body.verification_uri) {
+    // An unknown or misconfigured client ID lands here as 404 "Not Found",
+    // which says nothing useful on its own.
     throw networkError(
       body.error_description ??
         'GitHub rejected the sign-in request. Check that the OAuth app exists and has the device flow enabled.'
@@ -118,6 +133,7 @@ export const pollForAccessToken = async (
       throw networkError('Sign-in cancelled.');
     }
 
+    let status: number;
     let body: TokenResponse;
     try {
       const response = await axios.post<TokenResponse>(
@@ -127,11 +143,16 @@ export const pollForAccessToken = async (
           device_code: code.deviceCode,
           grant_type: GRANT_TYPE,
         },
-        { headers: JSON_HEADERS }
+        { headers: JSON_HEADERS, ...ACCEPT_ANY_STATUS }
       );
-      body = response.data;
+      status = response.status;
+      body = response.data ?? {};
     } catch {
       throw networkError('Could not reach GitHub while waiting for approval.');
+    }
+
+    if (status >= 500) {
+      throw networkError('GitHub is not answering sign-in requests right now.');
     }
 
     if (body.access_token) {
