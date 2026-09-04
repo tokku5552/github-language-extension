@@ -99,6 +99,6 @@ yarn lint
 - **レート制限対策**: 取得結果は `src/storage/` 経由で `chrome.storage.local` に一定時間キャッシュされます。キャッシュキーには取得経路が含まれるため、未認証の結果が認証済みの結果を上書きすることはありません。
 - **トークンの取得経路**: 設定画面は OAuth Device Flow（`src/api/deviceFlow.ts`）とトークン手入力の2つを提供します。Device Flow はクライアントシークレットを必要とせず、`src/config.ts` の `GITHUB_OAUTH_CLIENT_ID` が空の間はボタン自体が表示されません。取得経路は `src/storage/` に保存するだけで、`src/api/github.ts` はどちらで得たトークンかを区別しません。
 - **scope はゼロが既定です**。公開データの取得に scope は不要で、同意画面を軽く保つことが Device Flow を採用した理由そのものです。private 対応が必要になるまで `GITHUB_OAUTH_SCOPE` を空のままにしてください。
-- **`options_ui.open_in_tab` は `true` である必要があります**。Device Flow は認証のため別タブを開くので、モーダルの設定ダイアログだとその遷移で閉じられ、ポーリングが中断します。
+- **`options_ui.open_in_tab` は `true` にしています**。Device Flow はユーザーが GitHub と行き来する間ポーリングを生かしておく必要があります。chrome://extensions に埋め込まれるモーダルの設定画面はそのページの状態に左右されて閉じられ得るため、独立したタブの方が確実です（モーダルでも動く可能性はありますが未検証です）。
 - **トークンの取り扱い**: トークンは `chrome.storage.local` にのみ保存し、api.github.com / github.com の OAuth エンドポイント以外へ送信してはいけません。ログにも出力しないでください。
 - **失敗時の表示**: 取得に失敗した場合は必ず `ErrorState` で理由を表示します。空表示にフォールバックしないでください。
