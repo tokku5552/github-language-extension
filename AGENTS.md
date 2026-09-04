@@ -75,6 +75,7 @@ yarn lint
 - **`dist/` ディレクトリ内のファイルを直接編集しないでください。** このディレクトリはビルドプロセスによって生成されます。すべての変更は `src/` ディレクトリ内のファイルに対して行う必要があります。
 - 拡張機能のマニフェストは `public/manifest.json` にあります。
 - メインのポップアップUIは `public/popup.html` で定義され、`src/popup.tsx` によってレンダリングされます。
+- 設定画面は `public/options.html` で定義され、`src/options.tsx` によってレンダリングされます。新しいエントリポイントを追加する場合は `webpack/webpack.common.js` の `entry` にも追加してください。
 
 ## 8. Chrome拡張機能としての特記事項
 
@@ -84,4 +85,20 @@ yarn lint
 - **主要な設定ファイル**: `public/manifest.json` が、拡張機能の権限（permissions）、動作（action）、アイコンなどを定義する中心的なファイルです。変更を加える際は、このファイルの理解が不可欠です。
 - **UIはポップアップ**: この拡張機能のユーザーインターフェースは、ツールバーアイコンをクリックした際に表示されるポップアップ (`popup.html`) 内に実装されています。
 - **バックグラウンド/コンテントスクリプトの不在**: `manifest.json` には `background` や `content_scripts` の定義がありません。これは、拡張機能のロジックが主にポップアップ内で完結しており、ウェブページに直接スクリプトを注入したり、バックグラウンドで永続的に動作したりはしないことを意味します。
-- **外部APIとの通信**: `host_permissions` に `https://github-readme-stats.vercel.app/*` が指定されている通り、この拡張機能は外部のAPIと通信して統計情報を取得します。
+- **外部APIとの通信**: `host_permissions` に `https://api.github.com/*` と `https://github.com/login/*` が指定されている通り、この拡張機能は GitHub API および OAuth のデバイスフローと直接通信します。MV3 では拡張機能ページと Service Worker のみが host_permissions によって CORS を回避できます（content script は不可）。
+
+## 9. 統計データの取得方針
+
+統計は `src/api/github.ts` が GitHub API から直接取得し、`src/components/` の React コンポーネントが描画します。取得経路は保存されたトークンの有無で切り替わります。
+
+- **トークンなし（REST）**: `/users/{name}` と `/users/{name}/repos` のみを使用します。未認証の REST API は 1 時間あたり 60 リクエスト（IP 単位）に制限され、コミット数・PR 数・Issue 数・ランク・private リポジトリの統計は取得できません。言語内訳はリポジトリの主言語のカウントになります。
+- **トークンあり（GraphQL）**: `https://api.github.com/graphql` を使用し、上記すべてに加えてバイト数ベースの言語内訳を取得します。GraphQL API は未認証リクエストを一切受け付けません。
+
+いずれの経路も `src/types/stats.ts` の `Stats` に正規化して返すため、コンポーネント側はどちらの API が使われたかを意識しません。トークンでのみ取得できるフィールドは省略可能（optional）であり、`undefined` は「0」ではなく「トークンがないため取得不可」を意味します。
+
+- **レート制限対策**: 取得結果は `src/storage/` 経由で `chrome.storage.local` に一定時間キャッシュされます。キャッシュキーには取得経路が含まれるため、未認証の結果が認証済みの結果を上書きすることはありません。
+- **トークンの取得経路**: 設定画面は OAuth Device Flow（`src/api/deviceFlow.ts`）とトークン手入力の2つを提供します。Device Flow はクライアントシークレットを必要とせず、`src/config.ts` の `GITHUB_OAUTH_CLIENT_ID` が空の間はボタン自体が表示されません。取得経路は `src/storage/` に保存するだけで、`src/api/github.ts` はどちらで得たトークンかを区別しません。
+- **scope はゼロが既定です**。公開データの取得に scope は不要で、同意画面を軽く保つことが Device Flow を採用した理由そのものです。private 対応が必要になるまで `GITHUB_OAUTH_SCOPE` を空のままにしてください。
+- **`options_ui.open_in_tab` は `true` にしています**。Device Flow はユーザーが GitHub と行き来する間ポーリングを生かしておく必要があります。chrome://extensions に埋め込まれるモーダルの設定画面はそのページの状態に左右されて閉じられ得るため、独立したタブの方が確実です（モーダルでも動く可能性はありますが未検証です）。
+- **トークンの取り扱い**: トークンは `chrome.storage.local` にのみ保存し、api.github.com / github.com の OAuth エンドポイント以外へ送信してはいけません。ログにも出力しないでください。
+- **失敗時の表示**: 取得に失敗した場合は必ず `ErrorState` で理由を表示します。空表示にフォールバックしないでください。
