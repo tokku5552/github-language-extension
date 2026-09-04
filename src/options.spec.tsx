@@ -5,7 +5,13 @@ import { clearToken, getToken, setToken } from '@/storage';
 import { StatsErrorType } from '@/types/enums';
 import { StatsError } from '@/types/stats';
 import { ChakraProvider } from '@chakra-ui/react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import React from 'react';
 
 /** Mutable so a test can render the build that has no OAuth app configured. */
@@ -143,6 +149,67 @@ describe('Options', () => {
       await waitFor(() => {
         expect(screen.getByText('No such app.')).toBeInTheDocument();
       });
+    });
+
+    it('keeps the cancelled attempt from clobbering a new one', async () => {
+      let rejectFirst: (reason: unknown) => void = () => undefined;
+      pollForAccessTokenMock
+        .mockReturnValueOnce(
+          new Promise((_resolve, reject) => {
+            rejectFirst = reject;
+          })
+        )
+        .mockReturnValue(new Promise(() => undefined));
+
+      renderOptions();
+      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      await waitFor(() => {
+        expect(screen.getByTestId('device-code')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      await waitFor(() => {
+        expect(screen.getByTestId('device-code')).toBeInTheDocument();
+      });
+
+      // The cancelled poll notices its abort only now, well after the restart.
+      await act(async () => {
+        rejectFirst(
+          new StatsError(StatsErrorType.NETWORK, 'Sign-in cancelled.')
+        );
+      });
+
+      expect(screen.getByTestId('device-code')).toBeInTheDocument();
+      expect(screen.queryByText('Sign-in cancelled.')).not.toBeInTheDocument();
+    });
+
+    it('keeps the cancelled attempt from clobbering a cleared token', async () => {
+      let rejectFirst: (reason: unknown) => void = () => undefined;
+      pollForAccessTokenMock.mockReturnValue(
+        new Promise((_resolve, reject) => {
+          rejectFirst = reject;
+        })
+      );
+
+      renderOptions();
+      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      await waitFor(() => {
+        expect(screen.getByTestId('device-code')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+      await waitFor(() => {
+        expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
+      });
+
+      await act(async () => {
+        rejectFirst(
+          new StatsError(StatsErrorType.NETWORK, 'Sign-in cancelled.')
+        );
+      });
+
+      expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
     });
 
     it('is hidden when no OAuth app is configured', async () => {

@@ -66,14 +66,34 @@ export const Options = () => {
     setStatus({ kind: 'saved', login });
   };
 
-  const onSignIn = async () => {
+  /**
+   * Claims the page for a new attempt and returns a predicate saying whether
+   * that attempt is still the current one. An abandoned attempt can still
+   * settle - a poll only notices its abort on the next tick - and must not
+   * write over whatever replaced it.
+   */
+  const beginAttempt = () => {
     abort.current?.abort();
     const controller = new AbortController();
     abort.current = controller;
+    return { controller, isCurrent: () => abort.current === controller };
+  };
+
+  /** Ends the current attempt without starting another. */
+  const endAttempt = () => {
+    abort.current?.abort();
+    abort.current = undefined;
+  };
+
+  const onSignIn = async () => {
+    const { controller, isCurrent } = beginAttempt();
     setStatus({ kind: 'verifying' });
 
     try {
       const code = await requestDeviceCode(GITHUB_OAUTH_CLIENT_ID);
+      if (!isCurrent()) {
+        return;
+      }
       setStatus({ kind: 'awaiting', code });
       openVerificationPage(code.verificationUri);
 
@@ -82,9 +102,18 @@ export const Options = () => {
         code,
         { signal: controller.signal }
       );
+      if (!isCurrent()) {
+        return;
+      }
       const login = await validateToken(accessToken);
+      if (!isCurrent()) {
+        return;
+      }
       await persist(accessToken, login);
     } catch (caught) {
+      if (!isCurrent()) {
+        return;
+      }
       setStatus({
         kind: 'error',
         message: describe(caught, 'Sign-in failed.'),
@@ -93,21 +122,29 @@ export const Options = () => {
   };
 
   const onCancelSignIn = () => {
-    abort.current?.abort();
+    endAttempt();
     setStatus({ kind: 'idle' });
   };
 
   const onSave = async () => {
     const trimmed = token.trim();
     if (!trimmed) {
+      endAttempt();
       setStatus({ kind: 'error', message: 'Enter a token first.' });
       return;
     }
+    const { isCurrent } = beginAttempt();
     setStatus({ kind: 'verifying' });
     try {
       const login = await validateToken(trimmed);
+      if (!isCurrent()) {
+        return;
+      }
       await persist(trimmed, login);
     } catch (caught) {
+      if (!isCurrent()) {
+        return;
+      }
       setStatus({
         kind: 'error',
         message: describe(caught, 'Could not verify the token.'),
@@ -116,7 +153,7 @@ export const Options = () => {
   };
 
   const onClear = async () => {
-    abort.current?.abort();
+    endAttempt();
     await clearToken();
     setTokenValue('');
     setStatus({ kind: 'cleared' });
