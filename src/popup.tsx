@@ -17,12 +17,13 @@ export const Popup = () => {
   const [hasToken, setHasToken] = useState(true);
   const { register, setValue, handleSubmit, formState } = useForm<FormData>();
   /**
-   * Name of the most recent lookup, so that a repeated effect run - StrictMode
-   * mounts the popup twice - cannot spend a second request from the 60/hour
-   * anonymous budget. Keyed by name rather than by an in-flight flag because
-   * the duplicate pass can land after the first request has already settled.
+   * Name of the newest lookup. It serves two purposes: a repeated effect run
+   * for the same name is skipped rather than spending a second request from
+   * the 60/hour anonymous budget, and every state write is checked against it
+   * so a slow response for a name the user has already moved on from is
+   * discarded instead of overwriting the newer one.
    */
-  const requestedFor = useRef('');
+  const latestRequest = useRef('');
 
   const onSubmit = handleSubmit((data) => {
     setUsername(data['username']);
@@ -38,27 +39,40 @@ export const Popup = () => {
   }, []);
 
   const loadStats = useCallback(async (name: string) => {
-    if (requestedFor.current === name) {
+    if (latestRequest.current === name) {
       return;
     }
-    requestedFor.current = name;
+    latestRequest.current = name;
+    const isCurrent = () => latestRequest.current === name;
     setIsLoading(true);
     setError(undefined);
     try {
       const token = await getToken();
+      if (!isCurrent()) {
+        return;
+      }
       setHasToken(!!token);
       const source = token ? StatsSource.GRAPHQL : StatsSource.REST;
 
       const cached = await getCachedStats(name, source);
+      if (!isCurrent()) {
+        return;
+      }
       if (cached) {
         setStats(cached);
         return;
       }
 
       const fresh = await fetchStats(name, token || undefined);
+      if (!isCurrent()) {
+        return;
+      }
       setStats(fresh);
       await setCachedStats(fresh);
     } catch (caught) {
+      if (!isCurrent()) {
+        return;
+      }
       setStats(undefined);
       setError(
         caught instanceof StatsError
@@ -69,7 +83,9 @@ export const Popup = () => {
             )
       );
     } finally {
-      setIsLoading(false);
+      if (isCurrent()) {
+        setIsLoading(false);
+      }
     }
   }, []);
 

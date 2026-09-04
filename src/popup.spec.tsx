@@ -5,7 +5,13 @@ import { getCachedStats, getToken, setCachedStats } from '@/storage';
 import { LanguageUnit, StatsErrorType, StatsSource } from '@/types/enums';
 import { Stats, StatsError } from '@/types/stats';
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, waitFor } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 import React from 'react';
 
 const stats: Stats = {
@@ -36,9 +42,7 @@ const getCachedStatsMock = getCachedStats as jest.MockedFunction<
   typeof getCachedStats
 >;
 
-// StrictMode matches how the popup actually mounts, so the double-invoked
-// effect exercises the in-flight guard that protects the 60 requests/hour
-// budget.
+// StrictMode matches how the popup actually mounts in development.
 const renderPopup = () =>
   render(
     <React.StrictMode>
@@ -68,7 +72,7 @@ describe('Popup', () => {
     };
   });
 
-  it('fetches stats once for a username, under the StrictMode double mount', async () => {
+  it('fetches stats once per mount', async () => {
     renderPopup();
 
     await waitFor(() => {
@@ -134,6 +138,53 @@ describe('Popup', () => {
         screen.getByText('Add a personal access token')
       ).toBeInTheDocument();
     });
+  });
+
+  it('discards a slow response for a username the user has moved on from', async () => {
+    const firstStats: Stats = {
+      ...stats,
+      username: 'first',
+      name: 'First User',
+    };
+    const secondStats: Stats = {
+      ...stats,
+      username: 'second',
+      name: 'Second User',
+    };
+    let resolveFirst: (value: Stats) => void = () => undefined;
+    fetchStatsMock.mockImplementation((name) =>
+      name === 'first'
+        ? new Promise<Stats>((resolve) => {
+            resolveFirst = resolve;
+          })
+        : Promise.resolve(secondStats)
+    );
+    (getGitHubUsername as jest.Mock).mockReturnValue('first');
+
+    renderPopup();
+    await waitFor(() => {
+      expect(fetchStatsMock).toHaveBeenCalledWith('first', undefined);
+    });
+
+    fireEvent.change(screen.getByLabelText(/GitHub username/i), {
+      target: { value: 'second' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+    await waitFor(() => {
+      expect(
+        screen.getByText("Second User's GitHub Stats")
+      ).toBeInTheDocument();
+    });
+
+    // The abandoned lookup finally answers; it must not win.
+    await act(async () => {
+      resolveFirst(firstStats);
+    });
+
+    expect(screen.getByText("Second User's GitHub Stats")).toBeInTheDocument();
+    expect(
+      screen.queryByText("First User's GitHub Stats")
+    ).not.toBeInTheDocument();
   });
 
   it('hides the token prompt once a token is saved', async () => {
