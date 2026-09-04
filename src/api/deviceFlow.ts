@@ -8,8 +8,11 @@ const TOKEN_ENDPOINT = 'https://github.com/login/oauth/access_token';
 const GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:device_code';
 
 /**
- * GitHub returns HTML on some error paths unless JSON is requested explicitly,
- * so every call here asks for JSON.
+ * Without an explicit Accept header these endpoints default to form-encoded
+ * bodies on success and plain text on error (a bogus client ID answers with
+ * a bare "Not Found", verified live) - neither of which axios parses as JSON.
+ * Asking for application/json makes both cases a JSON object this file can
+ * read uniformly.
  */
 const JSON_HEADERS = {
   Accept: 'application/json',
@@ -80,8 +83,11 @@ export const requestDeviceCode = async (
   }
 
   if (!body.device_code || !body.user_code || !body.verification_uri) {
-    // An unknown or misconfigured client ID lands here as 404 "Not Found",
-    // which says nothing useful on its own.
+    // Verified live: an unknown client ID lands here as 404 "Not Found",
+    // which says nothing useful on its own, so a generic pointer to setup
+    // stands in for it. A registered app with the device flow left disabled
+    // is expected to answer with error_description instead - untested, since
+    // that needs an app that has the flow turned off.
     throw networkError(
       body.error_description ??
         'GitHub rejected the sign-in request. Check that the OAuth app exists and has the device flow enabled.'

@@ -50,8 +50,10 @@ export const Options = () => {
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
   const abort = useRef<AbortController>();
   const helperColor = useColorModeValue('gray.600', 'gray.400');
-  // Read at render time so a build without a configured OAuth app simply falls
-  // back to the manual token field.
+  // A build without a configured OAuth app (the constant left at '') falls
+  // back to the manual token field, since this is false. Read here rather
+  // than hoisted to module scope so options.spec.tsx can flip it per test via
+  // a mocked getter.
   const signInAvailable = GITHUB_OAUTH_CLIENT_ID !== '';
 
   useEffect(() => {
@@ -75,9 +77,11 @@ export const Options = () => {
 
   /**
    * Claims the page for a new attempt and returns a predicate saying whether
-   * that attempt is still the current one. An abandoned attempt can still
-   * settle - a poll only notices its abort on the next tick - and must not
-   * write over whatever replaced it.
+   * that attempt is still the current one. Every awaited step in onSignIn and
+   * onSave can still settle after the user cancels, clears, or starts over -
+   * the poll notices an abort only on its next tick, and requestDeviceCode,
+   * validateToken and setToken do not take a signal at all - so every write
+   * after an await is guarded by this rather than relying on any one of them.
    */
   const beginAttempt = () => {
     abort.current?.abort();
@@ -136,8 +140,8 @@ export const Options = () => {
   const onSave = async () => {
     const trimmed = token.trim();
     if (!trimmed) {
-      // Reaching for the token field is taken as abandoning a sign-in that is
-      // still waiting for approval, so any pending attempt ends here too.
+      // Pressing Save with the field empty also ends a pending sign-in - not
+      // just an empty save. Typing in the field alone does nothing.
       endAttempt();
       setStatus({ kind: 'error', message: 'Enter a token first.' });
       return;
