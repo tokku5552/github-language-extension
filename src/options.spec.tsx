@@ -115,9 +115,12 @@ describe('Options', () => {
         expect(screen.getByText('Connected as test_user.')).toBeInTheDocument();
       });
       // The token that reaches storage is the one the poll produced, and it is
-      // verified before being written.
+      // verified before being written - order included, not just both called.
       expect(validateTokenMock).toHaveBeenCalledWith('gho_token');
       expect(setToken).toHaveBeenCalledWith('gho_token');
+      expect(validateTokenMock.mock.invocationCallOrder[0]).toBeLessThan(
+        (setToken as jest.Mock).mock.invocationCallOrder[0]
+      );
     });
 
     it('reports a declined authorization', async () => {

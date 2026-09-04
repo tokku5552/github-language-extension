@@ -17,6 +17,25 @@ const code: DeviceCode = {
   interval: 0,
 };
 
+/**
+ * Mimics axios itself: a status the request did not opt into becomes a
+ * rejection, so a test can tell whether the code actually asked to read 4xx
+ * bodies rather than merely being handed one by a lenient mock.
+ */
+const respondWith =
+  (status: number, data: unknown) =>
+  (
+    _url: string,
+    _body: unknown,
+    config?: { validateStatus?: (status: number) => boolean }
+  ) => {
+    const accepts =
+      config?.validateStatus ?? ((code: number) => code >= 200 && code < 300);
+    return accepts(status)
+      ? Promise.resolve({ status, data })
+      : Promise.reject({ isAxiosError: true, response: { status, data } });
+  };
+
 describe('requestDeviceCode', () => {
   beforeEach(() => {
     axiosMock.post.mockReset();
@@ -51,10 +70,9 @@ describe('requestDeviceCode', () => {
   test('explains an unknown client id, which GitHub answers with a 404', async () => {
     // Verified against the live endpoint: an unregistered client ID returns
     // HTTP 404 with {"error":"Not Found"} and no description.
-    axiosMock.post.mockResolvedValueOnce({
-      status: 404,
-      data: { error: 'Not Found' },
-    });
+    axiosMock.post.mockImplementationOnce(
+      respondWith(404, { error: 'Not Found' }) as never
+    );
 
     await expect(requestDeviceCode('client-id')).rejects.toMatchObject({
       type: StatsErrorType.NETWORK,
@@ -63,10 +81,12 @@ describe('requestDeviceCode', () => {
   });
 
   test('prefers the description GitHub supplies', async () => {
-    axiosMock.post.mockResolvedValueOnce({
-      status: 400,
-      data: { error: 'invalid_request', error_description: 'No such app.' },
-    });
+    axiosMock.post.mockImplementationOnce(
+      respondWith(400, {
+        error: 'invalid_request',
+        error_description: 'No such app.',
+      }) as never
+    );
 
     await expect(requestDeviceCode('client-id')).rejects.toMatchObject({
       message: 'No such app.',
@@ -74,7 +94,7 @@ describe('requestDeviceCode', () => {
   });
 
   test('does not blame the OAuth app for a GitHub outage', async () => {
-    axiosMock.post.mockResolvedValueOnce({ status: 502, data: '<html>' });
+    axiosMock.post.mockImplementationOnce(respondWith(502, '<html>') as never);
 
     await expect(requestDeviceCode('client-id')).rejects.toMatchObject({
       message: expect.stringContaining('not answering'),
