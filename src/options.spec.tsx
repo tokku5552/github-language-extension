@@ -62,7 +62,13 @@ const renderOptions = () =>
     </ChakraProvider>
   );
 
-const tokenField = () => screen.getByLabelText(/personal access token/i);
+const tokenField = () => screen.getByLabelText(/パーソナルアクセストークン/);
+
+const writeText = jest.fn<Promise<void>, [string]>();
+
+const chromeTabsCreate = () =>
+  (global as unknown as { chrome: { tabs: { create: jest.Mock } } }).chrome.tabs
+    .create;
 
 describe('Options', () => {
   beforeEach(() => {
@@ -75,6 +81,13 @@ describe('Options', () => {
 
     const globalTyped = global as { chrome?: unknown };
     globalTyped.chrome = { tabs: { create: jest.fn() } };
+
+    writeText.mockReset();
+    writeText.mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
   });
 
   it('loads the saved token', async () => {
@@ -88,31 +101,87 @@ describe('Options', () => {
   });
 
   describe('sign in with GitHub', () => {
-    it('shows the code and opens the verification page', async () => {
+    it('shows the code without navigating away from it', async () => {
       // Never resolves: the code is only on screen while approval is pending.
       pollForAccessTokenMock.mockReturnValue(new Promise(() => undefined));
 
       renderOptions();
 
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(
+        screen.getByRole('button', { name: 'GitHub でサインイン' })
+      );
 
       await waitFor(() => {
         expect(screen.getByTestId('device-code')).toBeInTheDocument();
       });
       expect(screen.getByText('ABCD-1234')).toBeInTheDocument();
-      expect(
-        (global as unknown as { chrome: { tabs: { create: jest.Mock } } })
-          .chrome.tabs.create
-      ).toHaveBeenCalledWith({ url: 'https://github.com/login/device' });
+      // Opening GitHub here would send the user to a form asking for a code
+      // they had not been shown yet.
+      expect(chromeTabsCreate()).not.toHaveBeenCalled();
+    });
+
+    it('copies the code before opening GitHub', async () => {
+      pollForAccessTokenMock.mockReturnValue(new Promise(() => undefined));
+
+      renderOptions();
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'GitHub でサインイン' })
+      );
+      await waitFor(() => {
+        expect(screen.getByTestId('device-code')).toBeInTheDocument();
+      });
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'コードをコピーして GitHub を開く',
+        })
+      );
+
+      await waitFor(() => {
+        expect(writeText).toHaveBeenCalledWith('ABCD-1234');
+      });
+      expect(chromeTabsCreate()).toHaveBeenCalledWith({
+        url: 'https://github.com/login/device',
+      });
+    });
+
+    it('still opens GitHub when the clipboard is unavailable', async () => {
+      writeText.mockRejectedValue(new Error('denied'));
+      pollForAccessTokenMock.mockReturnValue(new Promise(() => undefined));
+
+      renderOptions();
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'GitHub でサインイン' })
+      );
+      await waitFor(() => {
+        expect(screen.getByTestId('device-code')).toBeInTheDocument();
+      });
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'コードをコピーして GitHub を開く',
+        })
+      );
+
+      await waitFor(() => {
+        expect(chromeTabsCreate()).toHaveBeenCalled();
+      });
+      // The code stays on screen so it can still be typed by hand.
+      expect(screen.getByText('ABCD-1234')).toBeInTheDocument();
     });
 
     it('stores the token once the user approves', async () => {
       renderOptions();
 
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(
+        screen.getByRole('button', { name: 'GitHub でサインイン' })
+      );
 
       await waitFor(() => {
-        expect(screen.getByText('Connected as test_user.')).toBeInTheDocument();
+        expect(
+          screen.getByText('test_user として接続しました。')
+        ).toBeInTheDocument();
       });
       // The token that reaches storage is the one the poll produced, and it is
       // verified before being written - order included, not just both called.
@@ -133,7 +202,9 @@ describe('Options', () => {
 
       renderOptions();
 
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(
+        screen.getByRole('button', { name: 'GitHub でサインイン' })
+      );
 
       await waitFor(() => {
         expect(
@@ -150,7 +221,9 @@ describe('Options', () => {
 
       renderOptions();
 
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(
+        screen.getByRole('button', { name: 'GitHub でサインイン' })
+      );
 
       await waitFor(() => {
         expect(screen.getByText('No such app.')).toBeInTheDocument();
@@ -168,13 +241,17 @@ describe('Options', () => {
         .mockReturnValue(new Promise(() => undefined));
 
       renderOptions();
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(
+        screen.getByRole('button', { name: 'GitHub でサインイン' })
+      );
       await waitFor(() => {
         expect(screen.getByTestId('device-code')).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'キャンセル' }));
+      fireEvent.click(
+        screen.getByRole('button', { name: 'GitHub でサインイン' })
+      );
       await waitFor(() => {
         expect(screen.getByTestId('device-code')).toBeInTheDocument();
       });
@@ -199,14 +276,16 @@ describe('Options', () => {
       );
 
       renderOptions();
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(
+        screen.getByRole('button', { name: 'GitHub でサインイン' })
+      );
       await waitFor(() => {
         expect(screen.getByTestId('device-code')).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+      fireEvent.click(screen.getByRole('button', { name: '削除' }));
       await waitFor(() => {
-        expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
+        expect(screen.getByText(/接続を解除しました/)).toBeInTheDocument();
       });
 
       await act(async () => {
@@ -215,7 +294,7 @@ describe('Options', () => {
         );
       });
 
-      expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
+      expect(screen.getByText(/接続を解除しました/)).toBeInTheDocument();
     });
 
     it('is hidden when no OAuth app is configured', async () => {
@@ -227,7 +306,7 @@ describe('Options', () => {
         expect(tokenField()).toBeInTheDocument();
       });
       expect(
-        screen.queryByRole('button', { name: /sign in/i })
+        screen.queryByRole('button', { name: 'GitHub でサインイン' })
       ).not.toBeInTheDocument();
     });
   });
@@ -237,10 +316,12 @@ describe('Options', () => {
       renderOptions();
 
       fireEvent.change(tokenField(), { target: { value: 'ghp_new' } });
-      fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+      fireEvent.click(screen.getByRole('button', { name: '保存' }));
 
       await waitFor(() => {
-        expect(screen.getByText('Connected as test_user.')).toBeInTheDocument();
+        expect(
+          screen.getByText('test_user として接続しました。')
+        ).toBeInTheDocument();
       });
       expect(validateTokenMock).toHaveBeenCalledWith('ghp_new');
       expect(setToken).toHaveBeenCalledWith('ghp_new');
@@ -254,10 +335,12 @@ describe('Options', () => {
       renderOptions();
 
       fireEvent.change(tokenField(), { target: { value: 'bad' } });
-      fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+      fireEvent.click(screen.getByRole('button', { name: '保存' }));
 
       await waitFor(() => {
-        expect(screen.getByText('Token was rejected.')).toBeInTheDocument();
+        expect(
+          screen.getByText(/GitHub にトークンを拒否されました/)
+        ).toBeInTheDocument();
       });
       expect(setToken).not.toHaveBeenCalled();
     });
@@ -265,10 +348,12 @@ describe('Options', () => {
     it('refuses to verify an empty token', async () => {
       renderOptions();
 
-      fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+      fireEvent.click(screen.getByRole('button', { name: '保存' }));
 
       await waitFor(() => {
-        expect(screen.getByText('Enter a token first.')).toBeInTheDocument();
+        expect(
+          screen.getByText('トークンを入力してください。')
+        ).toBeInTheDocument();
       });
       expect(validateTokenMock).not.toHaveBeenCalled();
     });
@@ -282,10 +367,10 @@ describe('Options', () => {
     await waitFor(() => {
       expect(tokenField()).toHaveValue('ghp_saved');
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+    fireEvent.click(screen.getByRole('button', { name: '削除' }));
 
     await waitFor(() => {
-      expect(screen.getByText(/Disconnected/)).toBeInTheDocument();
+      expect(screen.getByText(/接続を解除しました/)).toBeInTheDocument();
     });
     expect(clearToken).toHaveBeenCalled();
     expect(tokenField()).toHaveValue('');

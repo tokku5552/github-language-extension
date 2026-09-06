@@ -76,7 +76,7 @@ describe('requestDeviceCode', () => {
 
     await expect(requestDeviceCode('client-id')).rejects.toMatchObject({
       type: StatsErrorType.NETWORK,
-      message: expect.stringContaining('device flow enabled'),
+      message: expect.stringContaining('Device flow'),
     });
   });
 
@@ -97,7 +97,7 @@ describe('requestDeviceCode', () => {
     axiosMock.post.mockImplementationOnce(respondWith(502, '<html>') as never);
 
     await expect(requestDeviceCode('client-id')).rejects.toMatchObject({
-      message: expect.stringContaining('not answering'),
+      message: expect.stringContaining('応答していません'),
     });
   });
 
@@ -279,7 +279,7 @@ describe('pollForAccessToken', () => {
 
     await expect(promise).rejects.toMatchObject({
       type: StatsErrorType.NETWORK,
-      message: 'Sign-in cancelled.',
+      message: 'サインインをキャンセルしました。',
     });
     expect(axiosMock.post).not.toHaveBeenCalled();
   });
@@ -302,7 +302,7 @@ describe('pollForAccessToken', () => {
     answer({ status: 200, data: { access_token: 'gho_token' } });
 
     await expect(promise).rejects.toMatchObject({
-      message: 'Sign-in cancelled.',
+      message: 'サインインをキャンセルしました。',
     });
   });
 
