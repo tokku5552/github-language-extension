@@ -6,6 +6,7 @@ import {
 } from '@/api';
 import { GITHUB_OAUTH_CLIENT_ID } from '@/config';
 import { clearToken, getToken, setToken } from '@/storage';
+import { StatsErrorType } from '@/types/enums';
 import { StatsError } from '@/types/stats';
 import {
   Box,
@@ -42,12 +43,34 @@ const openVerificationPage = (url: string): void => {
   window.open(url, '_blank', 'noopener');
 };
 
-const describe = (caught: unknown, fallback: string): string =>
-  caught instanceof StatsError ? caught.message : fallback;
+/**
+ * Translates a failure for this page.
+ *
+ * Mapped by type rather than by reusing `error.message`, because the messages
+ * on errors from src/api/github.ts are shared with the popup, which is in
+ * English. Device flow errors are options-page-only and already carry Japanese
+ * text, so those pass through.
+ */
+const messageFor = (caught: unknown, fallback: string): string => {
+  if (!(caught instanceof StatsError)) {
+    return fallback;
+  }
+  switch (caught.type) {
+    case StatsErrorType.UNAUTHORIZED:
+      return 'GitHub にトークンを拒否されました。値が正しいか確認してください。';
+    case StatsErrorType.RATE_LIMITED:
+      return 'GitHub API のレート制限に達しました。しばらく待ってから再試行してください。';
+    case StatsErrorType.NOT_FOUND:
+      return 'GitHub がこのリクエストを受け付けませんでした。';
+    default:
+      return caught.message || fallback;
+  }
+};
 
 export const Options = () => {
   const [token, setTokenValue] = useState('');
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
+  const [copied, setCopied] = useState(false);
   const abort = useRef<AbortController>();
   const helperColor = useColorModeValue('gray.600', 'gray.400');
   // A build without a configured OAuth app (the constant left at '') falls
@@ -98,6 +121,7 @@ export const Options = () => {
 
   const onSignIn = async () => {
     const { controller, isCurrent } = beginAttempt();
+    setCopied(false);
     setStatus({ kind: 'verifying' });
 
     try {
@@ -105,8 +129,10 @@ export const Options = () => {
       if (!isCurrent()) {
         return;
       }
+      // The verification page is deliberately NOT opened here. It asks for a
+      // code that is only shown on this page, so sending the user there before
+      // they have seen it leaves them staring at an empty field.
       setStatus({ kind: 'awaiting', code });
-      openVerificationPage(code.verificationUri);
 
       const accessToken = await pollForAccessToken(
         GITHUB_OAUTH_CLIENT_ID,
@@ -127,13 +153,29 @@ export const Options = () => {
       }
       setStatus({
         kind: 'error',
-        message: describe(caught, 'Sign-in failed.'),
+        message: messageFor(caught, 'サインインに失敗しました。'),
       });
     }
   };
 
+  /**
+   * Puts the code on the clipboard before opening GitHub, so the field waiting
+   * on the other side can just be pasted into. Opening still happens if the
+   * clipboard is unavailable; the code stays on screen either way.
+   */
+  const onCopyAndOpen = async (code: DeviceCode) => {
+    try {
+      await navigator.clipboard.writeText(code.userCode);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+    openVerificationPage(code.verificationUri);
+  };
+
   const onCancelSignIn = () => {
     endAttempt();
+    setCopied(false);
     setStatus({ kind: 'idle' });
   };
 
@@ -143,7 +185,7 @@ export const Options = () => {
       // Pressing Save with the field empty also ends a pending sign-in - not
       // just an empty save. Typing in the field alone does nothing.
       endAttempt();
-      setStatus({ kind: 'error', message: 'Enter a token first.' });
+      setStatus({ kind: 'error', message: 'トークンを入力してください。' });
       return;
     }
     const { isCurrent } = beginAttempt();
@@ -160,7 +202,7 @@ export const Options = () => {
       }
       setStatus({
         kind: 'error',
-        message: describe(caught, 'Could not verify the token.'),
+        message: messageFor(caught, 'トークンを検証できませんでした。'),
       });
     }
   };
@@ -178,10 +220,8 @@ export const Options = () => {
         GitHub Language Stats
       </Heading>
       <Text fontSize="sm" color={helperColor} mb={5}>
-        Without credentials the extension uses the anonymous GitHub REST API,
-        which is limited to 60 requests per hour and cannot report commits, PRs,
-        issues or rank. Connecting an account raises the limit to 5,000 requests
-        per hour and restores the full card.
+        アカウントを接続していない間は、匿名の GitHub REST API
+        を使います。1時間あたり60リクエストまでに制限され、コミット数・PR数・Issue数・ランクは取得できません。接続すると1時間あたり5,000リクエストになり、これらがすべて表示されます。
       </Text>
 
       {signInAvailable && (
@@ -193,11 +233,11 @@ export const Options = () => {
             isLoading={status.kind === 'verifying'}
             isDisabled={status.kind === 'awaiting'}
           >
-            Sign in with GitHub
+            GitHub でサインイン
           </Button>
           <Text fontSize="xs" color={helperColor} mt={2}>
-            No scopes are requested, so GitHub only confirms who you are.
-            Nothing in your account can be read beyond what is already public.
+            権限（スコープ）は一切要求しません。GitHub
+            が確認するのはあなたが誰かということだけで、公開されている以上の情報は読み取られません。
           </Text>
 
           {status.kind === 'awaiting' && (
@@ -208,28 +248,57 @@ export const Options = () => {
               borderRadius="md"
               data-testid="device-code"
             >
-              <Text fontSize="sm" mb={2}>
-                Enter this code on GitHub to finish signing in:
+              <Text fontSize="sm" fontWeight="bold" mb={1}>
+                ステップ1: このコードをコピーします
               </Text>
-              <Code fontSize="xl" px={3} py={1} letterSpacing="widest">
+              <Code
+                fontSize="2xl"
+                px={3}
+                py={2}
+                letterSpacing="widest"
+                display="block"
+                textAlign="center"
+                my={2}
+              >
                 {status.code.userCode}
               </Code>
-              <Text fontSize="sm" mt={3}>
+
+              <Text fontSize="sm" fontWeight="bold" mt={4} mb={2}>
+                ステップ2: GitHub で貼り付けて承認します
+              </Text>
+              <Button
+                size="sm"
+                bg="#4299E1"
+                color="white"
+                onClick={() => onCopyAndOpen(status.code)}
+              >
+                コードをコピーして GitHub を開く
+              </Button>
+              {copied && (
+                <Text fontSize="xs" color="green.500" mt={2}>
+                  コピーしました。開いたタブで貼り付けてください。
+                </Text>
+              )}
+              <Text fontSize="xs" color={helperColor} mt={2}>
+                開かない場合は{' '}
                 <Link
                   color="#4299E1"
                   onClick={() =>
                     openVerificationPage(status.code.verificationUri)
                   }
                 >
-                  Reopen {status.code.verificationUri}
-                </Link>
+                  {status.code.verificationUri}
+                </Link>{' '}
+                を開いて、上のコードを手で入力してください。
               </Text>
-              <HStack mt={3}>
+
+              <HStack mt={4}>
                 <Button size="sm" variant="outline" onClick={onCancelSignIn}>
-                  Cancel
+                  キャンセル
                 </Button>
                 <Text fontSize="sm" color={helperColor}>
-                  Waiting for approval...
+                  承認を待っています...
+                  承認するとこの画面が自動で切り替わります。
                 </Text>
               </HStack>
             </Box>
@@ -242,8 +311,8 @@ export const Options = () => {
       <FormControl>
         <FormLabel fontSize="sm">
           {signInAvailable
-            ? 'Or paste a personal access token'
-            : 'GitHub personal access token'}
+            ? 'または、パーソナルアクセストークンを貼り付ける'
+            : 'GitHub パーソナルアクセストークン'}
         </FormLabel>
         <Input
           type="password"
@@ -252,9 +321,11 @@ export const Options = () => {
           onChange={(event) => setTokenValue(event.target.value)}
         />
         <FormHelperText color={helperColor}>
-          A classic token needs no scopes for public data; add <code>repo</code>{' '}
-          to include your private contributions. The token is stored locally in
-          this browser profile and is only ever sent to api.github.com.
+          公開データだけならスコープなしの classic
+          トークンで足ります。自分のプライベートリポジトリの統計も含めたい場合は{' '}
+          <code>repo</code>{' '}
+          を付けてください。トークンはこのブラウザのプロフィール内にのみ保存され、送信先は
+          api.github.com だけです。
         </FormHelperText>
       </FormControl>
 
@@ -266,21 +337,21 @@ export const Options = () => {
           onClick={onSave}
           isLoading={status.kind === 'verifying'}
         >
-          Save
+          保存
         </Button>
         <Button variant="outline" onClick={onClear}>
-          Clear
+          削除
         </Button>
       </HStack>
 
       {status.kind === 'saved' && (
         <Text mt={3} fontSize="sm" color="green.500">
-          Connected as {status.login}.
+          {status.login} として接続しました。
         </Text>
       )}
       {status.kind === 'cleared' && (
         <Text mt={3} fontSize="sm" color={helperColor}>
-          Disconnected. The extension will fall back to anonymous requests.
+          接続を解除しました。以降は匿名のリクエストに戻ります。
         </Text>
       )}
       {status.kind === 'error' && (

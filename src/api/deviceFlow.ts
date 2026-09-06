@@ -75,11 +75,15 @@ export const requestDeviceCode = async (
     status = response.status;
     body = response.data ?? {};
   } catch {
-    throw networkError('Could not reach GitHub to start sign-in.');
+    throw networkError(
+      'GitHub に接続できませんでした。ネットワークを確認してください。'
+    );
   }
 
   if (status >= 500) {
-    throw networkError('GitHub is not answering sign-in requests right now.');
+    throw networkError(
+      'GitHub がサインインのリクエストに応答していません。時間をおいて再試行してください。'
+    );
   }
 
   if (!body.device_code || !body.user_code || !body.verification_uri) {
@@ -90,7 +94,7 @@ export const requestDeviceCode = async (
     // that needs an app that has the flow turned off.
     throw networkError(
       body.error_description ??
-        'GitHub rejected the sign-in request. Check that the OAuth app exists and has the device flow enabled.'
+        'GitHub にサインインを拒否されました。OAuth App が存在し、Device flow が有効になっているか確認してください。'
     );
   }
 
@@ -103,7 +107,8 @@ export const requestDeviceCode = async (
   };
 };
 
-const cancelledError = (): StatsError => networkError('Sign-in cancelled.');
+const cancelledError = (): StatsError =>
+  networkError('サインインをキャンセルしました。');
 
 /** Sleeps, but gives up as soon as the caller aborts. */
 const wait = (seconds: number, signal?: AbortSignal): Promise<void> =>
@@ -147,7 +152,7 @@ export const pollForAccessToken = async (
     if (Date.now() >= deadline) {
       throw new StatsError(
         StatsErrorType.DEVICE_EXPIRED,
-        'The sign-in code expired. Start again.'
+        'コードの有効期限が切れました。もう一度サインインしてください。'
       );
     }
 
@@ -171,7 +176,9 @@ export const pollForAccessToken = async (
       if (signal?.aborted) {
         throw cancelledError();
       }
-      throw networkError('Could not reach GitHub while waiting for approval.');
+      throw networkError(
+        '承認を待っている間に GitHub へ接続できなくなりました。'
+      );
     }
 
     // A response that arrives in the same tick as the cancel must not be
@@ -181,7 +188,9 @@ export const pollForAccessToken = async (
     }
 
     if (status >= 500) {
-      throw networkError('GitHub is not answering sign-in requests right now.');
+      throw networkError(
+        'GitHub がサインインのリクエストに応答していません。時間をおいて再試行してください。'
+      );
     }
 
     if (body.access_token) {
@@ -198,16 +207,17 @@ export const pollForAccessToken = async (
       case 'expired_token':
         throw new StatsError(
           StatsErrorType.DEVICE_EXPIRED,
-          'The sign-in code expired. Start again.'
+          'コードの有効期限が切れました。もう一度サインインしてください。'
         );
       case 'access_denied':
         throw new StatsError(
           StatsErrorType.DEVICE_DENIED,
-          'Sign-in was declined on GitHub.'
+          'GitHub 側でサインインが拒否されました。'
         );
       default:
         throw networkError(
-          body.error_description ?? 'GitHub refused the sign-in request.'
+          body.error_description ??
+            'GitHub がサインインのリクエストを受け付けませんでした。'
         );
     }
   }
