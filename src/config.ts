@@ -12,7 +12,7 @@
 // `as string` keeps the type wide. Without it TypeScript infers the literal
 // type '' and every `=== ''` check below becomes a compile error the moment a
 // real client ID is filled in.
-export const GITHUB_OAUTH_CLIENT_ID = '' as string;
+export const GITHUB_OAUTH_CLIENT_ID = 'Ov23liwNGOaKwo4a1rpu' as string;
 
 /**
  * Scopes requested during sign-in.
