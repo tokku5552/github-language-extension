@@ -25,6 +25,16 @@ const stats: Stats = {
   source: StatsSource.REST,
 };
 
+/** Mutable so a test can pin either prompt label, independent of config.ts. */
+let clientId = '';
+
+jest.mock('@/config', () => ({
+  get GITHUB_OAUTH_CLIENT_ID() {
+    return clientId;
+  },
+  GITHUB_OAUTH_SCOPE: '',
+}));
+
 jest.mock('@/api', () => ({
   fetchStats: jest.fn(),
   getGitHubUsername: jest.fn().mockReturnValue('testuser'),
@@ -55,6 +65,7 @@ const renderPopup = () =>
 describe('Popup', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    clientId = '';
     (getGitHubUsername as jest.Mock).mockReturnValue('testuser');
     getTokenMock.mockResolvedValue('');
     getCachedStatsMock.mockResolvedValue(undefined);
@@ -198,6 +209,19 @@ describe('Popup', () => {
       ).toBeInTheDocument();
     });
     expect(fetchStatsMock).not.toHaveBeenCalled();
+  });
+
+  it('offers sign-in rather than a token once an OAuth app is configured', async () => {
+    clientId = 'client-id';
+
+    renderPopup();
+
+    await waitFor(() => {
+      expect(screen.getByText('Sign in with GitHub')).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByText('Add a personal access token')
+    ).not.toBeInTheDocument();
   });
 
   it('hides the token prompt once a token is saved', async () => {
