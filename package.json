@@ -26,10 +26,9 @@
     "@emotion/styled": "^11.10.5",
     "axios": "^1.2.1",
     "framer-motion": "^8.0.2",
-    "html-react-parser": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "7.86.0"
+    "react-hook-form": "7.87.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",
@@ -65,7 +64,9 @@
   "resolutions": {
     "terser": "^5.16.1",
     "semver": "^7.5.2",
-    "serialize-javascript": "^7.0.7"
+    "serialize-javascript": "^7.0.7",
+    "fast-uri": "3.1.7",
+    "browserslist": "^4.28.7"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

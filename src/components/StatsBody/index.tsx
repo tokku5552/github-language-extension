@@ -1,18 +1,17 @@
+import { Stats, StatsError } from '@/types/stats';
 import { Box, Center, Spinner } from '@chakra-ui/react';
-import parse from 'html-react-parser';
 import React from 'react';
+import ErrorState from '../ErrorState';
+import StatsCard from '../StatsCard';
+import TopLangsCard from '../TopLangsCard';
 
 export interface StatsBodyProps {
-  currentStats: string;
-  currentTopLanguage: string;
+  stats?: Stats;
+  error?: StatsError;
   isLoading: boolean;
 }
 
-export default function StatsBody({
-  currentStats,
-  currentTopLanguage,
-  isLoading,
-}: StatsBodyProps) {
+export default function StatsBody({ stats, error, isLoading }: StatsBodyProps) {
   if (isLoading) {
     return (
       <Center p={4} h="280px">
@@ -21,14 +20,21 @@ export default function StatsBody({
     );
   }
 
+  if (error) {
+    return <ErrorState error={error} />;
+  }
+
+  if (!stats) {
+    return null;
+  }
+
   return (
-    <>
-      {currentStats && (
-        <Box p={4}>
-          {parse(currentStats)}
-          {parse(currentTopLanguage)}
-        </Box>
-      )}
-    </>
+    <Box p={4}>
+      <StatsCard stats={stats} />
+      <TopLangsCard
+        languages={stats.languages}
+        languageUnit={stats.languageUnit}
+      />
+    </Box>
   );
 }
