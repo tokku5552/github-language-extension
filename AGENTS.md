@@ -56,6 +56,16 @@ yarn build
 yarn test
 ```
 
+`src/api/http.spec.ts` は axios をモックせず、ローカルサーバーに対して実際の axios（XHR アダプタ）を通します。axios 更新による挙動の変化はここで検出します。
+
+### ビルド成果物のスモークテスト
+
+```bash
+yarn build && yarn test:dist
+```
+
+`dist/` の manifest と HTML が参照するファイルが揃っていること、popup.html / options.html が実際のバンドルで描画されることを jsdom で確認します（`src/dist.smoke.ts`）。CI の build ジョブで実行されます。
+
 ### リンターの実行
 
 リンティングとフォーマットのエラーをチェックするには：

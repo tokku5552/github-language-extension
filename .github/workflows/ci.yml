@@ -102,6 +102,8 @@ jobs:
           yarn install --ignore-scripts
       - name: build
         run: yarn build
+      - name: Smoke test the build output
+        run: yarn test:dist
       - name: Update manifest.json
         run: |
           npx dot-json@1 dist/manifest.json version dummy
