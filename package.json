@@ -11,7 +11,8 @@
     "lint": "run-p -c -l lint:eslint lint:prettier",
     "lint:eslint": "eslint . ",
     "lint:prettier": " prettier -c .",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "author": "",
   "license": "MIT",
