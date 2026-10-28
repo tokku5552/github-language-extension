@@ -64,6 +64,14 @@ yarn test
 yarn lint
 ```
 
+### 型チェックの実行
+
+```bash
+yarn typecheck
+```
+
+CI（`.github/workflows/ci.yml`）は PR ごとに lint・typecheck・test・build を実行し、`ci-result` ジョブがそれらの結果をまとめます。`develop` の必須ステータスチェックは `ci-result` です。
+
 ## 6. コーディング規約
 
 - 既存のコーディングスタイルに従ってください。
