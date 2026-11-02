@@ -211,6 +211,38 @@ describe('Popup', () => {
     expect(fetchStatsMock).not.toHaveBeenCalled();
   });
 
+  // The two tests below run react-hook-form for real (StatsForm's own spec
+  // mocks it), so they catch an update that changes setValue or validation.
+  it('pre-fills the username read from the tab', async () => {
+    renderPopup();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/GitHub username/i)).toHaveValue('testuser');
+    });
+  });
+
+  it('refuses an empty username without looking it up', async () => {
+    (getGitHubUsername as jest.Mock).mockReturnValue('');
+    renderPopup();
+    await waitFor(() => {
+      expect(
+        screen.getByText('Add a personal access token')
+      ).toBeInTheDocument();
+    });
+
+    // Submits the form directly so the browser's own `required` check, which
+    // jsdom may apply to a button click, cannot stand in for the form library's.
+    const input = screen.getByLabelText(/GitHub username/i);
+    fireEvent.submit(input.closest('form') as HTMLFormElement);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('GitHub username is required')
+      ).toBeInTheDocument();
+    });
+    expect(fetchStatsMock).not.toHaveBeenCalled();
+  });
+
   it('offers sign-in rather than a token once an OAuth app is configured', async () => {
     clientId = 'client-id';
 

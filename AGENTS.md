@@ -56,6 +56,16 @@ yarn build
 yarn test
 ```
 
+`src/api/http.spec.ts` は axios をモックせず、ローカルサーバーに対して実際の axios（XHR アダプタ）を通します。axios 更新による挙動の変化はここで検出します。
+
+### ビルド成果物のスモークテスト
+
+```bash
+yarn build && yarn test:dist
+```
+
+`dist/` の manifest と HTML が参照するファイルが揃っていること、popup.html / options.html が実際のバンドルで描画されることを jsdom で確認します（`src/dist.smoke.ts`）。CI の build ジョブで実行されます。
+
 ### リンターの実行
 
 リンティングとフォーマットのエラーをチェックするには：
@@ -63,6 +73,14 @@ yarn test
 ```bash
 yarn lint
 ```
+
+### 型チェックの実行
+
+```bash
+yarn typecheck
+```
+
+CI（`.github/workflows/ci.yml`）は PR ごとに lint・typecheck・test・build を実行し、`ci-result` ジョブがそれらの結果をまとめます。`develop` の必須ステータスチェックは `ci-result` です。
 
 ## 6. コーディング規約
 
